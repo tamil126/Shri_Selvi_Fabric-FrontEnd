@@ -1,71 +1,28 @@
-# Getting Started with Create React App
+# Welcome to Shri Selvi Fabric
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## About Us
 
-## Available Scripts
+At Shri Selvi Fabric, we specialize in providing high-quality fabric materials for all your needs. Whether you're a fashion designer, a DIY enthusiast, or a textile manufacturer, we have the perfect fabrics for you. With a wide range of options in various colors, textures, and patterns, you'll find everything you need to bring your creative projects to life.
 
-In the project directory, you can run:
+## Our Products
 
-### `npm start`
+- *Cotton Fabrics*: Soft, breathable, and versatile, our cotton fabrics are perfect for clothing, quilting, and home décor projects.
+- *Silk Fabrics*: Luxurious and elegant, our silk fabrics are ideal for special occasions, formal wear, and accessories.
+- *Linen Fabrics*: Light and airy, our linen fabrics are great for summer clothing, table linens, and upholstery.
+- *Polyester Fabrics*: Durable and easy to care for, our polyester fabrics are suitable for a wide range of applications, including sportswear and outdoor gear.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Our Services
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+In addition to providing quality fabrics, we also offer the following services:
 
-### `npm test`
+- *Custom Orders*: Need a specific fabric or pattern? We can fulfill custom orders to meet your exact specifications.
+- *Wholesale Pricing*: If you're a business or organization looking to purchase fabrics in bulk, we offer competitive wholesale pricing.
+- *Expert Advice*: Our team of fabric experts is here to assist you with any questions or concerns you may have. We're dedicated to ensuring your satisfaction with every purchase.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Contact Us
 
-### `npm run build`
+Ready to place an order or have questions about our products and services? Get in touch with us today!
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-"# Shri_Selvi_Fabric-FrontEnd" 
+- *Phone*: 9750374945
+- *Email*: info@shriselvifabric.com
+- *Address*: Salem
