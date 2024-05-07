@@ -25,7 +25,7 @@ function Transaction() {
 
     const fetchRecentTransactions = async () => {
         try {
-            const response = await axios.get('http://localhost:3662/api/transactions');
+            const response = await axios.get('/api/transactions');
             setRecentTransactions(response.data);
         } catch (error) {
             console.error('Error fetching recent transactions:', error);
@@ -59,7 +59,7 @@ function Transaction() {
             formDataForRequest.append('description', formData.description);
             formDataForRequest.append('file', formData.file);
 
-            const response = await axios.post('http://localhost:3662/api/transactions', formDataForRequest, {
+            const response = await axios.post('/api/transactions', formDataForRequest, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
