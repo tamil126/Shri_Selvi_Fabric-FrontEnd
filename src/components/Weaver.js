@@ -23,7 +23,7 @@ function Weaver() {
 
     const fetchWeavers = async () => {
         try {
-            const response = await axios.get('http://localhost:3662/api/weavers');
+            const response = await axios.get('/api/weavers');
             setWeavers(response.data);
         } catch (error) {
             console.error('Error fetching weavers:', error);
@@ -59,7 +59,7 @@ function Weaver() {
             formDataForRequest.append('reference', formData.reference);
             formDataForRequest.append('document', formData.document);
 
-            const response = await axios.post('http://localhost:3662/api/weavers', formDataForRequest, {
+            const response = await axios.post('/api/weavers', formDataForRequest, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
