@@ -7,7 +7,7 @@ function Home() {
     const [weavers, setWeavers] = useState([]);
 
     useEffect(() => {
-        axios.get("http://localhost:3662/api/transactions")
+        axios.get("/api/transactions")
             .then((res) => {
                 setTransactions(res.data);
             })
@@ -15,7 +15,7 @@ function Home() {
                 console.error("Error fetching transactions:", error);
             });
 
-        axios.get("http://localhost:3662/api/weavers")
+        axios.get("/api/weavers")
             .then((res) => {
                 setWeavers(res.data);
             })
