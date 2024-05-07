@@ -13,7 +13,7 @@ function Login() {
             return;
         }
 
-        axios.post("http://localhost:3662/login", { username, password })
+        axios.post("/login", { username, password })
             .then((res) => {
                 if (res.data.status === "success") {
                     alert("Successfully logged in!");
