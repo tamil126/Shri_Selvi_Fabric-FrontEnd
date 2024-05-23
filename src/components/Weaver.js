@@ -1,27 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 
 function Weaver() {
-    const [formData, setFormData] = useState({
-        date: '',
-        weaverName: '',
-        loomName: '',
-        loomNumber: '',
-        address: '',
-        mobileNumber1: '',
-        mobileNumber2: '',
-        reference: '',
-        document: null
-    });
-    const [errorMessage, setErrorMessage] = useState('');
     const [weavers, setWeavers] = useState([]);
+    const [selectedWeaver, setSelectedWeaver] = useState(null);
+    const [errorMessage, setErrorMessage] = useState('');
 
-    useEffect(() => {
-        fetchWeavers();
-    }, []);
-
-    const fetchWeavers = async () => {
+    const fetchWeavers = useCallback(async () => {
         try {
             const response = await axios.get('http://localhost:3662/api/weavers');
             setWeavers(response.data);
@@ -29,120 +17,156 @@ function Weaver() {
             console.error('Error fetching weavers:', error);
             setErrorMessage('Error fetching weavers. Please try again later.');
         }
-    };
+    }, []);
 
-    const handleChange = (event) => {
-        const { name, value } = event.target;
-        setFormData({ ...formData, [name]: value });
-    };
+    const formik = useFormik({
+        initialValues: {
+            date: '',
+            weaverName: '',
+            loomName: '',
+            loomNumber: '',
+            address: '',
+            mobileNumber1: '',
+            mobileNumber2: '',
+            reference: '',
+            document: null
+        },
+        validationSchema: Yup.object({
+            date: Yup.string().required('Date is required'),
+            weaverName: Yup.string().required('Weaver Name is required'),
+            loomName: Yup.string().required('Loom Name is required'),
+            loomNumber: Yup.number().required('Loom Number is required').positive('Loom Number must be positive'),
+            address: Yup.string().required('Address is required'),
+            mobileNumber1: Yup.string().required('Mobile Number 1 is required'),
+            document: Yup.mixed().nullable().test('fileSize', 'File is too large', value => !value || value.size <= 5242880)
+        }),
+        onSubmit: async (values) => {
+            try {
+                const formDataForRequest = new FormData();
+                formDataForRequest.append('date', values.date);
+                formDataForRequest.append('weaverName', values.weaverName);
+                formDataForRequest.append('loomName', values.loomName);
+                formDataForRequest.append('loomNumber', values.loomNumber);
+                formDataForRequest.append('address', values.address);
+                formDataForRequest.append('mobileNumber1', values.mobileNumber1);
+                formDataForRequest.append('mobileNumber2', values.mobileNumber2);
+                formDataForRequest.append('reference', values.reference);
+                formDataForRequest.append('document', values.document);
 
-    const handleFileChange = (event) => {
-        const file = event.target.files[0];
-        setFormData({ ...formData, document: file });
-    };
-
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        if (!formData.date || !formData.weaverName || !formData.loomName || !formData.loomNumber || !formData.address || !formData.mobileNumber1) {
-            setErrorMessage("Please fill in all required fields.");
-            return;
-        }
-        try {
-            const formDataForRequest = new FormData();
-            formDataForRequest.append('date', formData.date);
-            formDataForRequest.append('weaverName', formData.weaverName);
-            formDataForRequest.append('loomName', formData.loomName);
-            formDataForRequest.append('loomNumber', formData.loomNumber);
-            formDataForRequest.append('address', formData.address);
-            formDataForRequest.append('mobileNumber1', formData.mobileNumber1);
-            formDataForRequest.append('mobileNumber2', formData.mobileNumber2);
-            formDataForRequest.append('reference', formData.reference);
-            formDataForRequest.append('document', formData.document);
-
-            const response = await axios.post('http://localhost:3662/api/weavers', formDataForRequest, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
+                if (selectedWeaver) {
+                    const response = await axios.put(`http://localhost:3662/api/weavers/${selectedWeaver.id}`, formDataForRequest, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    });
+                    console.log(response.data);
+                    setSelectedWeaver(null);
+                } else {
+                    const response = await axios.post('http://localhost:3662/api/weavers', formDataForRequest, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    });
+                    console.log(response.data);
                 }
-            });
 
-            console.log(response.data);
-            setFormData({
-                date: '',
-                weaverName: '',
-                loomName: '',
-                loomNumber: '',
-                address: '',
-                mobileNumber1: '',
-                mobileNumber2: '',
-                reference: '',
-                document: null
-            });
-            setErrorMessage('');
-            fetchWeavers();
-        } catch (error) {
-            console.error('Error submitting weaver:', error);
-            setErrorMessage("An error occurred. Please try again later.");
+                formik.resetForm();
+                fetchWeavers();
+            } catch (error) {
+                console.error('Error submitting weaver:', error);
+                setErrorMessage("An error occurred. Please try again later.");
+            }
         }
+    });
+
+    useEffect(() => {
+        fetchWeavers();
+    }, [fetchWeavers]);
+
+    const handleUpdateClick = (weaver) => {
+        setSelectedWeaver(weaver);
+        formik.setValues({
+            date: weaver.date,
+            weaverName: weaver.weaverName,
+            loomName: weaver.loomName,
+            loomNumber: weaver.loomNumber,
+            address: weaver.address,
+            mobileNumber1: weaver.mobileNumber1,
+            mobileNumber2: weaver.mobileNumber2,
+            reference: weaver.reference,
+            document: null
+        });
+    };
+
+    const handleCancelUpdate = () => {
+        setSelectedWeaver(null);
+        formik.resetForm();
     };
 
     return (
         <div className="weaver-page">
-            <div className="row">
-                <div className="col-md-12">
-                    <div className="navigation-buttons">
-                        <div className='companyName'>
-                            <h2 className='companyHeading text-center'>Shri Selvi Fabric</h2>
-                            <Link to="/home" className="btn btn-secondary navigation-button">Home</Link>
-                            <Link to="/transaction" className="btn btn-secondary navigation-button">Transaction</Link>
-                            <Link to="/weaver" className="btn btn-primary navigation-button">Weaver</Link>
-                            <Link to="/sareedesign" className="btn btn-secondary navigation-button">Saree Design</Link>
-                        </div>
-                    </div>
+            <div className="navigation-buttons">
+                <div className='companyName'>
+                    <h2 className='companyHeading text-center'>Shri Selvi Fabric</h2>
+                    <Link to="/home" className="btn btn-secondary navigation-button">Home</Link>
+                    <Link to="/transaction" className="btn btn-secondary navigation-button">Transaction</Link>
+                    <Link to="/weaver" className="btn btn-primary navigation-button">Weaver</Link>
+                    <Link to="/sareedesign" className="btn btn-secondary navigation-button">Saree Design</Link>
                 </div>
-
-                <div className="col-md-3">
+            </div>
+            <div className="row">
+                <div className="col-md-3 my-4">
                     <div className="add-weaver">
                         <div className="weaver-form">
-                            <h2>Add Weaver</h2>
+                            <h2>{selectedWeaver ? 'Update Weaver' : 'Add Weaver'}</h2>
                             {errorMessage && <div className="error-message">{errorMessage}</div>}
-                            <form onSubmit={handleSubmit}>
+                            {formik.errors.general && <div className="error-message">{formik.errors.general}</div>}
+                            <form onSubmit={formik.handleSubmit}>
                                 <div className="form-group">
                                     <label>Date:</label>
-                                    <input type="date" className="form-control" name="date" value={formData.date} onChange={handleChange} required />
+                                    <input type="date" className="form-control" name="date" value={formik.values.date} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                                    {formik.touched.date && formik.errors.date ? <div className="error-message">{formik.errors.date}</div> : null}
                                 </div>
                                 <div className="form-group">
                                     <label>Weaver Name:</label>
-                                    <input type="text" className="form-control" name="weaverName" value={formData.weaverName} onChange={handleChange} required />
+                                    <input type="text" className="form-control" name="weaverName" value={formik.values.weaverName} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                                    {formik.touched.weaverName && formik.errors.weaverName ? <div className="error-message">{formik.errors.weaverName}</div> : null}
                                 </div>
                                 <div className="form-group">
                                     <label>Loom Name:</label>
-                                    <input type="text" className="form-control" name="loomName" value={formData.loomName} onChange={handleChange} required />
+                                    <input type="text" className="form-control" name="loomName" value={formik.values.loomName} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                                    {formik.touched.loomName && formik.errors.loomName ? <div className="error-message">{formik.errors.loomName}</div> : null}
                                 </div>
                                 <div className="form-group">
                                     <label>Loom Number:</label>
-                                    <input type="text" className="form-control" name="loomNumber" value={formData.loomNumber} onChange={handleChange} required />
+                                    <input type="number" className="form-control" name="loomNumber" value={formik.values.loomNumber} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                                    {formik.touched.loomNumber && formik.errors.loomNumber ? <div className="error-message">{formik.errors.loomNumber}</div> : null}
                                 </div>
                                 <div className="form-group">
                                     <label>Address:</label>
-                                    <input type="text" className="form-control" name="address" value={formData.address} onChange={handleChange} required />
+                                    <input type="text" className="form-control" name="address" value={formik.values.address} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                                    {formik.touched.address && formik.errors.address ? <div className="error-message">{formik.errors.address}</div> : null}
                                 </div>
                                 <div className="form-group">
                                     <label>Mobile Number 1:</label>
-                                    <input type="text" className="form-control" name="mobileNumber1" value={formData.mobileNumber1} onChange={handleChange} required />
+                                    <input type="text" className="form-control" name="mobileNumber1" value={formik.values.mobileNumber1} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                                    {formik.touched.mobileNumber1 && formik.errors.mobileNumber1 ? <div className="error-message">{formik.errors.mobileNumber1}</div> : null}
                                 </div>
                                 <div className="form-group">
                                     <label>Mobile Number 2:</label>
-                                    <input type="text" className="form-control" name="mobileNumber2" value={formData.mobileNumber2} onChange={handleChange} />
+                                    <input type="text" className="form-control" name="mobileNumber2" value={formik.values.mobileNumber2} onChange={formik.handleChange} onBlur={formik.handleBlur} />
                                 </div>
                                 <div className="form-group">
                                     <label>Reference:</label>
-                                    <input type="text" className="form-control" name="reference" value={formData.reference} onChange={handleChange} />
+                                    <input type="text" className="form-control" name="reference" value={formik.values.reference} onChange={formik.handleChange} onBlur={formik.handleBlur} />
                                 </div>
                                 <div className="form-group">
                                     <label>Upload Document:</label>
-                                    <input type="file" className="form-control-file" name="document" onChange={handleFileChange} />
+                                    <input type="file" className="form-control-file" name="document" onChange={(event) => formik.setFieldValue('document', event.target.files[0])} />
+                                    {formik.touched.document && formik.errors.document ? <div className="error-message">{formik.errors.document}</div> : null}
                                 </div>
-                                <button type="submit" className="btn btn-primary">Submit</button>
+                                <button type="submit" className="btn btn-secondary">{selectedWeaver ? 'Update' : 'Submit'}</button>
+                                {selectedWeaver && <button type="button" className="btn btn-secondary bg-danger btn-size mt-1" onClick={handleCancelUpdate}>Cancel</button>}
                             </form>
                         </div>
                     </div>
@@ -150,7 +174,7 @@ function Weaver() {
 
                 <div className="col-md-9">
                     <div className="weavers-list">
-                        <h2>All Weavers</h2>
+                        <h2 className='text-center'>All Weavers</h2>
                         <table className="weavers-table">
                             <thead>
                                 <tr>
@@ -162,7 +186,7 @@ function Weaver() {
                                     <th>Address</th>
                                     <th>Mobile Number</th>
                                     <th>Reference</th>
-                                    {/* <th>Document</th> */}
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -176,7 +200,7 @@ function Weaver() {
                                         <td>{weaver.address}</td>
                                         <td>{weaver.mobileNumber1}</td>
                                         <td>{weaver.reference}</td>
-                                        {/* <td>{weaver.document}</td> */}
+                                        <td><button className="btn btn-primary" onClick={() => handleUpdateClick(weaver)}>Update</button></td>
                                     </tr>
                                 ))}
                             </tbody>

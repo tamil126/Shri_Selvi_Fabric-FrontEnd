@@ -6,6 +6,7 @@ import Home from './components/Home';
 import Transaction from './components/Transaction';
 import Weaver from './components/Weaver';
 import SareeDesign from './components/SareeDesign';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   return (

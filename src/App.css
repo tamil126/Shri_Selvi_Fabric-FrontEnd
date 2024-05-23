@@ -1,3 +1,9 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
 /* Login */
 
 .login-bg {
@@ -63,8 +69,8 @@ button[type="submit"]:hover {
   margin-top: 50px;
 }
 
-.introduction{
-  margin-top: 8%;
+.introduction {
+  margin-top: 1%;
   margin-bottom: 20px;
 }
 
@@ -96,7 +102,7 @@ button[type="submit"]:hover {
   width: 80%;
 }
 
-.data-container > div {
+.data-container>div {
   flex: 1;
   margin: 0 10px;
 }
@@ -117,7 +123,9 @@ button[type="submit"]:hover {
 /* Transaction */
 
 .transaction-page {
-  padding: 20px;
+  margin: 0%;
+  padding: 0%;
+  width: 99%;
 }
 
 .error-message {
@@ -198,16 +206,17 @@ button[type="submit"]:hover {
 }
 
 .navigation-buttons {
-  position: fixed;
+  /* position: fixed;
   top: 0;
-  left: 0;
+  left: 0; */
   width: 100%;
   background-color: #c7fffaf9;
-  z-index: 999;
+  /* z-index: 999; */
   padding: 1%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.companyHeading{
+.companyHeading {
   /* left: 30;
   position: relative;
   align-items: center; */
@@ -228,7 +237,19 @@ button[type="submit"]:hover {
   padding: 20px;
   border: 1px solid #ddd;
   border-radius: 5px;
-  margin-top: 30%;
+  margin-top: 1%;
+}
+
+.update-transaction {
+  margin-top: 1%;
+  background-color: #f9f9f9;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.btn-size {
+  width: 100%;
 }
 
 .transaction-form {
@@ -254,7 +275,7 @@ button[type="submit"]:hover {
 }
 
 .heading {
-  margin-top: 10%;
+  margin-top: 1%;
   text-align: center;
   margin-bottom: 20px;
 }
@@ -309,12 +330,13 @@ button[type="submit"]:hover {
   margin-bottom: 10px;
 }
 
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
+
   .col-md-3,
   .col-md-9 {
-      width: 100%;
+    width: 100%;
   }
-}
+} */
 
 .form-group {
   margin-bottom: 20px;
@@ -323,6 +345,7 @@ button[type="submit"]:hover {
 .form-group label {
   display: block;
   margin-bottom: 5px;
+  font-weight: bold;
 }
 
 .form-control {
@@ -341,9 +364,11 @@ button[type="submit"]:hover {
 
 .weaver-page {
   width: 99%;
-  margin-top: 20px;
+  /* margin-top: 20px; */
   /* overflow-x: auto; */
-  
+  margin: 0;
+  padding: 0;
+
 
 }
 
@@ -353,19 +378,19 @@ button[type="submit"]:hover {
 
 .form-container {
   width: 30%;
-  margin-right: 20px;
+  /* margin-right: 20px; */
 }
 
 .weaver-form {
   padding: 20px;
   background-color: #f2f2f2;
   border-radius: 5px;
-  margin-top: 24%;
+  margin-top: 5px;
   margin-left: 5%;
 }
 
 .weavers-list {
-  margin-top: 10%;
+  margin-top: 1%;
 }
 
 .weaver-form label {
@@ -386,7 +411,7 @@ button[type="submit"]:hover {
 }
 
 .weaver-form button {
-  background-color: #4CAF50;
+  /* background-color: #4CAF50; */
   color: white;
   padding: 10px 20px;
   border: none;
@@ -414,7 +439,7 @@ button[type="submit"]:hover {
 .weavers-table td {
   border: 1px solid #ddd;
   padding: 8px;
-  text-align: left;
+  text-align: center;
 }
 
 .weavers-table th {
@@ -439,7 +464,7 @@ button[type="submit"]:hover {
 }
 
 .saree-design-form {
-  margin-top: 10%;
+  margin-top: 1%;
 }
 
 .image-upload-container {
@@ -493,4 +518,217 @@ button {
 
 button:hover {
   background-color: #0056b3;
+}
+
+.navigation-buttons {
+  margin-bottom: 20px;
+} 
+
+.saree-design-preview {
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.saree-design-preview table {
+  width: 100%;
+}
+
+.saree-design-preview th,
+.saree-design-preview td {
+  padding: 10px;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+
+.saree-design-preview th {
+  background-color: #f2f2f2;
+}
+
+.saree-design-preview img {
+  max-width: 150px;
+  height: auto;
+  border-radius: 5px;
+  /* Add border radius to images */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  /* Add box shadow to images */
+  transition: transform 0.3s ease;
+}
+
+.saree-design-preview img:hover {
+  transform: scale(1.05);
+  /* Scale up image on hover */
+}
+
+.saree-table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.saree-table tbody tr:hover {
+  background-color: #f0f0f0;
+}
+
+.saree-design-page {
+  padding: 20px;
+  background-color: #f2f2f2;
+  border-radius: 5px;
+  margin-top: 1%;
+  margin-left: 5%;
+}
+
+.saree-design-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-gap: 20px;
+  justify-items: center;
+}
+
+.saree-design-item img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 5px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.saree-design-item h4 {
+  text-align: center;
+}
+
+.weaver-name {
+  margin-top: 10px;
+  color: #6c757d;
+}
+
+.weavers-table th {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.weavers-table tbody tr:hover {
+  background-color: rgba(0, 123, 255, 0.1);
+}
+
+@media (min-width: 576px) {
+  .container {
+      max-width: 540px;
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+      max-width: 720px;
+  }
+}
+
+@media (min-width: 992px) {
+  .container {
+      max-width: 960px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .container {
+      max-width: 1140px;
+  }
+}
+
+@media (max-width: 767px) {
+  .navigation-buttons {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+  }
+
+  .navigation-button {
+      margin-bottom: 10px;
+  }
+
+  .weavers-table,
+  .saree-design-preview {
+      margin-top: 20px;
+  }
+
+  .saree-design-grid {
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+
+  .saree-design-item {
+      margin-bottom: 20px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  .navigation-links {
+      justify-content: center;
+  }
+
+  .weavers-table,
+  .saree-design-preview {
+      margin-top: 20px;
+  }
+
+  .saree-design-grid {
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
+}
+
+@media (max-width: 991px) {
+  .companyHeading {
+      font-size: 24px;
+  }
+
+  .introduction h2 {
+      font-size: 20px;
+  }
+
+  .weavers-table,
+  .saree-design-preview {
+      padding: 10px;
+  }
+
+  .saree-design-item img {
+      width: 100%;
+      height: auto;
+  }
+}
+
+@media (max-width: 575px) {
+  .companyHeading {
+      font-size: 20px;
+  }
+
+  .introduction h2 {
+      font-size: 18px;
+  }
+
+  .navigation-buttons {
+      padding: 10px;
+  }
+
+  .navigation-button {
+      font-size: 14px;
+  }
+
+  .weavers-table th,
+  .weavers-table td {
+      font-size: 14px;
+  }
+
+  .weavers-table th {
+      padding: 8px;
+  }
+
+  .weavers-table td {
+      padding: 8px;
+  }
+
+  .saree-design-item h4 {
+      font-size: 12px;
+  }
+
+  .saree-design-item img {
+      width: 100%;
+      height: auto;
+  }
 }
