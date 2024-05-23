@@ -73,7 +73,7 @@ function SareeDesign() {
     const handleWeaverChange = async (event) => {
         const selectedWeaver = event.target.value;
         formik.setFieldValue('weaver', selectedWeaver);
-        formik.setFieldValue('loom', ''); // Reset selected loom when weaver changes
+        formik.setFieldValue('loom', '');
 
         try {
             const response = await axios.get(`/api/loom-numbers/${selectedWeaver}`);
