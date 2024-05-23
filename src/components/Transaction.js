@@ -20,17 +20,12 @@ function Transaction() {
 
     const fetchRecentTransactions = async () => {
         try {
-<<<<<<< HEAD
-            const response = await axios.get('http://localhost:3662/api/transactions');
+            const response = await axios.get('/api/transactions');
             const formattedTransactions = response.data.map(transaction => ({
                 ...transaction,
                 date: new Date(transaction.date).toISOString().split('T')[0]
             }));
             setRecentTransactions(formattedTransactions);
-=======
-            const response = await axios.get('/api/transactions');
-            setRecentTransactions(response.data);
->>>>>>> 95dfa8ffbb697e0a3a7e8fea451e6caa28527fb4
         } catch (error) {
             console.error('Error fetching recent transactions:', error);
         }
@@ -77,65 +72,17 @@ function Transaction() {
                     formDataForRequest.append('files', file);
                 });
 
-                const response = await axios.post('http://localhost:3662/api/transactions', formDataForRequest, {
+                const response = await axios.post('/api/transactions', formDataForRequest, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     }
                 });
 
-<<<<<<< HEAD
                 console.log(response.data);
                 resetForm();
                 fetchRecentTransactions();
             } catch (error) {
                 console.error('Error submitting transaction:', error);
-=======
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        if (!formData.date || !formData.type || !formData.amount || !formData.category) {
-            setErrorMessage("Please fill in all required fields.");
-            return;
-        }
-
-        try {
-            const formDataForRequest = new FormData();
-            formDataForRequest.append('date', formData.date);
-            formDataForRequest.append('type', formData.type);
-            formDataForRequest.append('amount', formData.amount);
-            formDataForRequest.append('category', formData.category);
-            formDataForRequest.append('subCategory', formData.subCategory);
-            formDataForRequest.append('description', formData.description);
-            formDataForRequest.append('file', formData.file);
-
-            const response = await axios.post('/api/transactions', formDataForRequest, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
-
-            console.log(response.data);
-            setFormData({
-                date: '',
-                type: '',
-                amount: '',
-                category: '',
-                subCategory: '',
-                description: '',
-                file: null
-            });
-            setErrorMessage('');
-            fetchRecentTransactions();
-        } catch (error) {
-            console.error('Error submitting transaction:', error);
-            if (error.response) {
-                console.error('Server responded with:', error.response.data);
-                console.error('Status code:', error.response.status);
-                console.error('Headers:', error.response.headers);
-            } else if (error.request) {
-                console.error('No response received:', error.request);
-            } else {
-                console.error('Request setup error:', error.message);
->>>>>>> 95dfa8ffbb697e0a3a7e8fea451e6caa28527fb4
             }
         }
     });
@@ -186,7 +133,7 @@ function Transaction() {
                 formDataForRequest.append('files', file);
             });
 
-            await axios.put(`http://localhost:3662/api/transactions/${selectedTransaction.id}`, formDataForRequest, {
+            await axios.put(`/api/transactions/${selectedTransaction.id}`, formDataForRequest, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }

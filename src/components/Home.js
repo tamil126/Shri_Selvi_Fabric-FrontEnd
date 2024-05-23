@@ -9,38 +9,23 @@ function Home() {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-<<<<<<< HEAD
-        axios.get("http://localhost:3662/api/weavers")
-=======
-        axios.get("/api/transactions")
-            .then((res) => {
-                setTransactions(res.data);
-            })
-            .catch((error) => {
-                console.error("Error fetching transactions:", error);
-            });
+        const fetchData = async () => {
+            try {
+                const weaversResponse = await axios.get("/api/weavers");
+                setWeavers(weaversResponse.data);
 
-        axios.get("/api/weavers")
->>>>>>> 95dfa8ffbb697e0a3a7e8fea451e6caa28527fb4
-            .then((res) => {
-                setWeavers(res.data);
-            })
-            .catch((error) => {
-                console.error("Error fetching weavers:", error);
-                setError(error);
-            });
+                const sareeDesignsResponse = await axios.get("/api/saree-designs");
+                setSareeDesigns(sareeDesignsResponse.data);
 
-        axios.get("http://localhost:3662/api/saree-designs")
-            .then((res) => {
-                setSareeDesigns(res.data);
-            })
-            .catch((error) => {
-                console.error("Error fetching saree designs:", error);
-                setError(error);
-            })
-            .finally(() => {
                 setLoading(false);
-            });
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                setError(error);
+                setLoading(false);
+            }
+        };
+
+        fetchData();
     }, []);
 
     if (loading) {
@@ -92,7 +77,7 @@ function Home() {
                             <div className="saree-design-grid">
                                 {sareeDesigns.map((design, index) => (
                                     <div key={design.id} className="saree-design-item">
-                                        <img src={`http://localhost:3662/${design.image}`} alt={`Design ${index + 1}`} width={200} height={200} />
+                                        <img src={`/${design.image}`} alt={`Design ${index + 1}`} width={200} height={200} />
                                         <h4>{design.weaverName}</h4>
                                     </div>
                                 ))}
