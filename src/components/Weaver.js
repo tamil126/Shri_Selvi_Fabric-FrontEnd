@@ -11,7 +11,7 @@ function Weaver() {
 
     const fetchWeavers = useCallback(async () => {
         try {
-            const response = await axios.get('http://localhost:3662/api/weavers');
+            const response = await axios.get('/api/weavers');
             setWeavers(response.data);
         } catch (error) {
             console.error('Error fetching weavers:', error);
@@ -53,6 +53,7 @@ function Weaver() {
                 formDataForRequest.append('reference', values.reference);
                 formDataForRequest.append('document', values.document);
 
+<<<<<<< HEAD
                 if (selectedWeaver) {
                     const response = await axios.put(`http://localhost:3662/api/weavers/${selectedWeaver.id}`, formDataForRequest, {
                         headers: {
@@ -68,6 +69,34 @@ function Weaver() {
                         }
                     });
                     console.log(response.data);
+=======
+    const handleFileChange = (event) => {
+        const file = event.target.files[0];
+        setFormData({ ...formData, document: file });
+    };
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        if (!formData.date || !formData.weaverName || !formData.loomName || !formData.loomNumber || !formData.address || !formData.mobileNumber1) {
+            setErrorMessage("Please fill in all required fields.");
+            return;
+        }
+        try {
+            const formDataForRequest = new FormData();
+            formDataForRequest.append('date', formData.date);
+            formDataForRequest.append('weaverName', formData.weaverName);
+            formDataForRequest.append('loomName', formData.loomName);
+            formDataForRequest.append('loomNumber', formData.loomNumber);
+            formDataForRequest.append('address', formData.address);
+            formDataForRequest.append('mobileNumber1', formData.mobileNumber1);
+            formDataForRequest.append('mobileNumber2', formData.mobileNumber2);
+            formDataForRequest.append('reference', formData.reference);
+            formDataForRequest.append('document', formData.document);
+
+            const response = await axios.post('/api/weavers', formDataForRequest, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+>>>>>>> 95dfa8ffbb697e0a3a7e8fea451e6caa28527fb4
                 }
 
                 formik.resetForm();

@@ -9,7 +9,19 @@ function Home() {
     const [error, setError] = useState(null);
 
     useEffect(() => {
+<<<<<<< HEAD
         axios.get("http://localhost:3662/api/weavers")
+=======
+        axios.get("/api/transactions")
+            .then((res) => {
+                setTransactions(res.data);
+            })
+            .catch((error) => {
+                console.error("Error fetching transactions:", error);
+            });
+
+        axios.get("/api/weavers")
+>>>>>>> 95dfa8ffbb697e0a3a7e8fea451e6caa28527fb4
             .then((res) => {
                 setWeavers(res.data);
             })
