@@ -11,7 +11,7 @@ function Weaver() {
 
     const fetchWeavers = useCallback(async () => {
         try {
-            const response = await axios.get('/api/weavers');
+            const response = await axios.get('http://localhost:3662/api/weavers');
             setWeavers(response.data);
         } catch (error) {
             console.error('Error fetching weavers:', error);
@@ -54,7 +54,7 @@ function Weaver() {
                 formDataForRequest.append('document', values.document);
 
                 if (selectedWeaver) {
-                    const response = await axios.put(`/api/weavers/${selectedWeaver.id}`, formDataForRequest, {
+                    const response = await axios.put(`http://localhost:3662/api/weavers/${selectedWeaver.id}`, formDataForRequest, {
                         headers: {
                             'Content-Type': 'multipart/form-data'
                         }
@@ -62,7 +62,7 @@ function Weaver() {
                     console.log(response.data);
                     setSelectedWeaver(null);
                 } else {
-                    const response = await axios.post('/api/weavers', formDataForRequest, {
+                    const response = await axios.post('http://localhost:3662/api/weavers', formDataForRequest, {
                         headers: {
                             'Content-Type': 'multipart/form-data'
                         }
@@ -149,12 +149,12 @@ function Weaver() {
                                 </div>
                                 <div className="form-group">
                                     <label>Mobile Number 1:</label>
-                                    <input type="text" className="form-control" name="mobileNumber1" value={formik.values.mobileNumber1} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                                    <input type="tel" className="form-control" name="mobileNumber1" value={formik.values.mobileNumber1} onChange={formik.handleChange} onBlur={formik.handleBlur} />
                                     {formik.touched.mobileNumber1 && formik.errors.mobileNumber1 ? <div className="error-message">{formik.errors.mobileNumber1}</div> : null}
                                 </div>
                                 <div className="form-group">
                                     <label>Mobile Number 2:</label>
-                                    <input type="text" className="form-control" name="mobileNumber2" value={formik.values.mobileNumber2} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                                    <input type="tel" className="form-control" name="mobileNumber2" value={formik.values.mobileNumber2} onChange={formik.handleChange} onBlur={formik.handleBlur} />
                                 </div>
                                 <div className="form-group">
                                     <label>Reference:</label>
