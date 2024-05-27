@@ -20,7 +20,7 @@ function Transaction() {
 
     const fetchRecentTransactions = async () => {
         try {
-            const response = await axios.get('http://localhost:3662/api/transactions');
+            const response = await axios.get('http://127.0.0.1:3662/api/transactions');
             const formattedTransactions = response.data.map(transaction => ({
                 ...transaction,
                 date: new Date(transaction.date).toISOString().split('T')[0]
@@ -72,7 +72,7 @@ function Transaction() {
                     formDataForRequest.append('files', file);
                 });
 
-                const response = await axios.post('http://localhost:3662/api/transactions', formDataForRequest, {
+                const response = await axios.post('http://127.0.0.1:3662/api/transactions', formDataForRequest, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     }
@@ -133,7 +133,7 @@ function Transaction() {
                 formDataForRequest.append('files', file);
             });
 
-            await axios.put(`http://localhost:3662/api/transactions/${selectedTransaction.id}`, formDataForRequest, {
+            await axios.put(`http://127.0.0.1:3662/api/transactions/${selectedTransaction.id}`, formDataForRequest, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }

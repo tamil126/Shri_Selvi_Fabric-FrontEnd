@@ -11,10 +11,10 @@ function Home() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const weaversResponse = await axios.get("http://localhost:3662/api/weavers");
+                const weaversResponse = await axios.get("http://127.0.0.1:3662/api/weavers");
                 setWeavers(weaversResponse.data);
 
-                const sareeDesignsResponse = await axios.get("http://localhost:3662/api/saree-designs");
+                const sareeDesignsResponse = await axios.get("http://127.0.0.1:3662/api/saree-designs");
                 setSareeDesigns(sareeDesignsResponse.data);
 
                 setLoading(false);

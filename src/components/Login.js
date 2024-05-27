@@ -13,7 +13,7 @@ function Login() {
             return;
         }
 
-        axios.post("http://localhost:3662/login", { username, password })  // Full URL of the backend
+        axios.post("http://127.0.0.1:3662/login", { username, password })  // Full URL of the backend
             .then((res) => {
                 if (res.data.status === "success") {
                     alert("Successfully logged in!");
