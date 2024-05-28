@@ -20,7 +20,7 @@ function Transaction() {
 
     const fetchRecentTransactions = async () => {
         try {
-            const response = await axios.get('/api/transactions');
+            const response = await axios.get('https://www.newrainbowsarees.in/api/transactions');
             const formattedTransactions = response.data.map(transaction => ({
                 ...transaction,
                 date: new Date(transaction.date).toISOString().split('T')[0]
@@ -47,7 +47,7 @@ function Transaction() {
             amount: Yup.number()
                 .required('Amount is required')
                 .positive('Amount must be positive')
-                .max(1000000, 'Amount cannot exceed 1,000,000'),
+                .max(1000000, 'Amount can not exceed 1,000,000'),
             category: Yup.string()
                 .required('Category is required')
                 .min(3, 'Category must be at least 3 characters')
@@ -72,7 +72,7 @@ function Transaction() {
                     formDataForRequest.append('files', file);
                 });
 
-                const response = await axios.post('/api/transactions', formDataForRequest, {
+                const response = await axios.post('https://www.newrainbowsarees.in/api/transactions', formDataForRequest, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     }
@@ -133,7 +133,7 @@ function Transaction() {
                 formDataForRequest.append('files', file);
             });
 
-            await axios.put(`/api/transactions/${selectedTransaction.id}`, formDataForRequest, {
+            await axios.put(`https://www.newrainbowsarees.in/api/transactions/${selectedTransaction.id}`, formDataForRequest, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
@@ -205,7 +205,7 @@ function Transaction() {
                                 </div>
                                 <div className="form-group">
                                     <label>Amount:</label>
-                                    <input type="number" className="form-control" name="amount" value={formik.values.amount} onChange={formik.handleChange} onBlur={formik.handleBlur} required />
+                                    <input type="tel" className="form-control" name="amount" value={formik.values.amount} onChange={formik.handleChange} onBlur={formik.handleBlur} required />
                                     {formik.touched.amount && formik.errors.amount ? <div className="error-message">{formik.errors.amount}</div> : null}
                                 </div>
                                 <div className="form-group">
@@ -254,7 +254,7 @@ function Transaction() {
                                     </div>
                                     <div className="form-group">
                                         <label>Amount:</label>
-                                        <input type="number" className="form-control" name="amount" value={formik.values.amount} onChange={formik.handleChange} onBlur={formik.handleBlur} required />
+                                        <input type="tel" className="form-control" name="amount" value={formik.values.amount} onChange={formik.handleChange} onBlur={formik.handleBlur} required />
                                         {formik.touched.amount && formik.errors.amount ? <div className="error-message">{formik.errors.amount}</div> : null}
                                     </div>
                                     <div className="form-group">

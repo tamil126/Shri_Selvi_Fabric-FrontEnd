@@ -14,7 +14,7 @@ function Login() {
             return;
         }
 
-        axios.post("/login", { username, password })
+        axios.post("https://www.newrainbowsarees.in/login", { username, password })  // Full URL of the backend
             .then((res) => {
                 if (res.data.status === "success") {
                     alert("Successfully logged in!");

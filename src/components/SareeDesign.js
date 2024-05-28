@@ -17,7 +17,7 @@ function SareeDesign() {
 
     const fetchWeaverOptions = async () => {
         try {
-            const response = await axios.get('/api/weavers');
+            const response = await axios.get('https://www.newrainbowsarees.in/api/weavers');
             setWeaverOptions(response.data);
         } catch (error) {
             console.error('Error fetching weaver options:', error);
@@ -27,7 +27,7 @@ function SareeDesign() {
 
     const fetchSareeDesigns = async () => {
         try {
-            const response = await axios.get('/api/saree-designs');
+            const response = await axios.get('https://www.newrainbowsarees.in/api/saree-designs');
             setSareeDesigns(response.data);
         } catch (error) {
             console.error('Error fetching saree designs:', error);
@@ -55,7 +55,7 @@ function SareeDesign() {
             formData.append('image', values.image);
 
             try {
-                await axios.post('/api/saree-designs', formData, {
+                await axios.post('https://www.newrainbowsarees.in/api/saree-designs', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     }
@@ -76,7 +76,7 @@ function SareeDesign() {
         formik.setFieldValue('loom', '');
 
         try {
-            const response = await axios.get(`/api/loom-numbers/${selectedWeaver}`);
+            const response = await axios.get(`https://www.newrainbowsarees.in/api/loom-numbers/${selectedWeaver}`);
             setLoomOptions(response.data);
         } catch (error) {
             console.error('Error fetching loom numbers:', error);
@@ -162,7 +162,7 @@ function SareeDesign() {
                         {sareeDesigns.map((design, index) => (
                             <tr key={design.id}>
                                 <td>{index + 1}</td>
-                                <td><img src={`/${design.image}`} alt={`Design ${index + 1}`} /></td>
+                                <td><img src={`https://www.newrainbowsarees.in/${design.image}`} alt={`Design ${index + 1}`} /></td>
                                 <td>{design.weaverName}</td>
                                 <td>{design.loomNumber}</td>
                             </tr>
