@@ -11,7 +11,7 @@ function Weaver() {
 
     const fetchWeavers = useCallback(async () => {
         try {
-            const response = await axios.get('http://127.0.0.1:3662/api/weavers');
+            const response = await axios.get('https://www.newrainbowsarees.in/api/weavers');
             setWeavers(response.data);
         } catch (error) {
             console.error('Error fetching weavers:', error);
@@ -54,7 +54,7 @@ function Weaver() {
                 formDataForRequest.append('document', values.document);
 
                 if (selectedWeaver) {
-                    const response = await axios.put(`http://127.0.0.1:3662/api/weavers/${selectedWeaver.id}`, formDataForRequest, {
+                    const response = await axios.put(`https://www.newrainbowsarees.in/api/weavers/${selectedWeaver.id}`, formDataForRequest, {
                         headers: {
                             'Content-Type': 'multipart/form-data'
                         }
@@ -62,7 +62,7 @@ function Weaver() {
                     console.log(response.data);
                     setSelectedWeaver(null);
                 } else {
-                    const response = await axios.post('http://127.0.0.1:3662/api/weavers', formDataForRequest, {
+                    const response = await axios.post('https://www.newrainbowsarees.in/api/weavers', formDataForRequest, {
                         headers: {
                             'Content-Type': 'multipart/form-data'
                         }
