@@ -4,6 +4,7 @@ import axios from 'axios';
 import * as XLSX from 'xlsx';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import { BASE_URL } from '../config/constant';
 
 function Transaction() {
     const [recentTransactions, setRecentTransactions] = useState([]);
@@ -20,7 +21,7 @@ function Transaction() {
 
     const fetchRecentTransactions = async () => {
         try {
-            const response = await axios.get('https://www.newrainbowsarees.in/api/transactions');
+            const response = await axios.get(`${BASE_URL}/transactions`);
             const formattedTransactions = response.data.map(transaction => ({
                 ...transaction,
                 date: new Date(transaction.date).toISOString().split('T')[0]
@@ -72,7 +73,7 @@ function Transaction() {
                     formDataForRequest.append('files', file);
                 });
 
-                const response = await axios.post('https://www.newrainbowsarees.in/api/transactions', formDataForRequest, {
+                const response = await axios.post(`${BASE_URL}/transactions`, formDataForRequest, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     }
@@ -133,7 +134,7 @@ function Transaction() {
                 formDataForRequest.append('files', file);
             });
 
-            await axios.put(`https://www.newrainbowsarees.in/api/transactions/${selectedTransaction.id}`, formDataForRequest, {
+            await axios.put(`${BASE_URL}/transactions/${selectedTransaction.id}`, formDataForRequest, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
