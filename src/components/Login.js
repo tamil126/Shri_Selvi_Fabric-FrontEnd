@@ -41,11 +41,11 @@ function Login() {
                 <form onSubmit={handleSubmit}>
                     <div className="forms-group">
                         <label htmlFor="username">Username</label><br />
-                        <input type="text" id="username" name="username" value={username} onChange={(e) => setUsername(e.target.value)} placeholder='Email' required />
+                        <input type="text" id="username" name="username" value={username} onChange={(e) => setUsername(e.target.value)} placeholder='Email' required autocomplete="username"/>
                     </div>
                     <div className="forms-group">
                         <label htmlFor="password">Password</label><br />
-                        <input type="password" id="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder='Password' required />
+                        <input type="password" id="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder='Password' required autocomplete="current-password"/>
                     </div>
                     <button type="submit">Submit</button>
                 </form>
