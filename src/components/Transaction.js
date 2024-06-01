@@ -13,10 +13,17 @@ function Transaction() {
     const [typeFilter, setTypeFilter] = useState('all');
     const [transactionCount, setTransactionCount] = useState(10);
     const [selectedTransaction, setSelectedTransaction] = useState(null);
+    const [categories, setCategories] = useState([]);
+    const [subCategories, setSubCategories] = useState([]);
+    const [newCategory, setNewCategory] = useState('');
+    const [newSubCategory, setNewSubCategory] = useState('');
+    const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
+    const [showNewSubCategoryInput, setShowNewSubCategoryInput] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
         fetchRecentTransactions();
+        fetchCategoriesAndSubCategories();
     }, []);
 
     const fetchRecentTransactions = async () => {
@@ -29,6 +36,16 @@ function Transaction() {
             setRecentTransactions(formattedTransactions);
         } catch (error) {
             console.error('Error fetching recent transactions:', error);
+        }
+    };
+
+    const fetchCategoriesAndSubCategories = async () => {
+        try {
+            const response = await axios.get(`${BASE_URL}/categories`);
+            setCategories(response.data.categories);
+            setSubCategories(response.data.subCategories);
+        } catch (error) {
+            console.error('Error fetching categories and subcategories:', error);
         }
     };
 
@@ -48,7 +65,7 @@ function Transaction() {
             amount: Yup.number()
                 .required('Amount is required')
                 .positive('Amount must be positive')
-                .max(1000000, 'Amount can not exceed 1,000,000'),
+                .max(1000000, 'Amount cannot exceed 1,000,000'),
             category: Yup.string()
                 .required('Category is required')
                 .min(3, 'Category must be at least 3 characters')
@@ -66,12 +83,14 @@ function Transaction() {
                 formDataForRequest.append('date', formattedDate);
                 formDataForRequest.append('type', values.type);
                 formDataForRequest.append('amount', values.amount);
-                formDataForRequest.append('category', values.category);
-                formDataForRequest.append('subCategory', values.subCategory);
+                formDataForRequest.append('category', showNewCategoryInput ? newCategory : values.category);
+                formDataForRequest.append('subCategory', showNewSubCategoryInput ? newSubCategory : values.subCategory);
                 formDataForRequest.append('description', values.description);
                 values.files.forEach(file => {
                     formDataForRequest.append('files', file);
                 });
+
+                console.log("Submitting form data:", formDataForRequest); // Debugging line
 
                 const response = await axios.post(`${BASE_URL}/transactions`, formDataForRequest, {
                     headers: {
@@ -81,7 +100,12 @@ function Transaction() {
 
                 console.log(response.data);
                 resetForm();
+                setNewCategory('');
+                setNewSubCategory('');
+                setShowNewCategoryInput(false);
+                setShowNewSubCategoryInput(false);
                 fetchRecentTransactions();
+                fetchCategoriesAndSubCategories();
             } catch (error) {
                 console.error('Error submitting transaction:', error);
             }
@@ -113,11 +137,15 @@ function Transaction() {
             description: transaction.description,
             files: transaction.files || []
         });
+        setShowNewCategoryInput(false);
+        setShowNewSubCategoryInput(false);
     };
 
     const handleCancelUpdate = () => {
         setSelectedTransaction(null);
         formik.resetForm();
+        setShowNewCategoryInput(false);
+        setShowNewSubCategoryInput(false);
     };
 
     const handleUpdateSubmit = async (event) => {
@@ -127,12 +155,14 @@ function Transaction() {
             formDataForRequest.append('date', formik.values.date);
             formDataForRequest.append('type', formik.values.type);
             formDataForRequest.append('amount', formik.values.amount);
-            formDataForRequest.append('category', formik.values.category);
-            formDataForRequest.append('subCategory', formik.values.subCategory);
+            formDataForRequest.append('category', showNewCategoryInput ? newCategory : formik.values.category);
+            formDataForRequest.append('subCategory', showNewSubCategoryInput ? newSubCategory : formik.values.subCategory);
             formDataForRequest.append('description', formik.values.description);
             formik.values.files.forEach(file => {
                 formDataForRequest.append('files', file);
             });
+
+            console.log("Updating form data:", formDataForRequest); // Debugging line
 
             await axios.put(`${BASE_URL}/transactions/${selectedTransaction.id}`, formDataForRequest, {
                 headers: {
@@ -142,7 +172,12 @@ function Transaction() {
 
             setSelectedTransaction(null);
             formik.resetForm();
+            setNewCategory('');
+            setNewSubCategory('');
+            setShowNewCategoryInput(false);
+            setShowNewSubCategoryInput(false);
             fetchRecentTransactions();
+            fetchCategoriesAndSubCategories();
             navigate('/transaction', { replace: true });
         } catch (error) {
             console.error('Error updating transaction:', error);
@@ -211,12 +246,36 @@ function Transaction() {
                                 </div>
                                 <div className="form-group">
                                     <label>Category:</label>
-                                    <input type="text" className="form-control" name="category" value={formik.values.category} onChange={formik.handleChange} onBlur={formik.handleBlur} required />
+                                    <select className="form-control" name="category" value={formik.values.category} onChange={(e) => {
+                                        formik.handleChange(e);
+                                        setShowNewCategoryInput(e.target.value === 'new');
+                                    }} onBlur={formik.handleBlur} required>
+                                        <option value="">Select category</option>
+                                        {categories.map(category => (
+                                            <option key={category} value={category}>{category}</option>
+                                        ))}
+                                        <option value="new">Add new category</option>
+                                    </select>
+                                    {showNewCategoryInput && (
+                                        <input type="text" className="form-control mt-2" placeholder="Enter new category" value={newCategory} onChange={(e) => setNewCategory(e.target.value)} required />
+                                    )}
                                     {formik.touched.category && formik.errors.category ? <div className="error-message">{formik.errors.category}</div> : null}
                                 </div>
                                 <div className="form-group">
                                     <label>Sub-Category:</label>
-                                    <input type="text" className="form-control" name="subCategory" value={formik.values.subCategory} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                                    <select className="form-control" name="subCategory" value={formik.values.subCategory} onChange={(e) => {
+                                        formik.handleChange(e);
+                                        setShowNewSubCategoryInput(e.target.value === 'new');
+                                    }} onBlur={formik.handleBlur} required>
+                                        <option value="">Select sub-category</option>
+                                        {subCategories.map(subCategory => (
+                                            <option key={subCategory} value={subCategory}>{subCategory}</option>
+                                        ))}
+                                        <option value="new">Add new sub-category</option>
+                                    </select>
+                                    {showNewSubCategoryInput && (
+                                        <input type="text" className="form-control mt-2" placeholder="Enter new sub-category" value={newSubCategory} onChange={(e) => setNewSubCategory(e.target.value)} required />
+                                    )}
                                     {formik.touched.subCategory && formik.errors.subCategory ? <div className="error-message">{formik.errors.subCategory}</div> : null}
                                 </div>
                                 <div className="form-group">
@@ -260,12 +319,36 @@ function Transaction() {
                                     </div>
                                     <div className="form-group">
                                         <label>Category:</label>
-                                        <input type="text" className="form-control" name="category" value={formik.values.category} onChange={formik.handleChange} onBlur={formik.handleBlur} required />
+                                        <select className="form-control" name="category" value={formik.values.category} onChange={(e) => {
+                                            formik.handleChange(e);
+                                            setShowNewCategoryInput(e.target.value === 'new');
+                                        }} onBlur={formik.handleBlur} required>
+                                            <option value="">Select category</option>
+                                            {categories.map(category => (
+                                                <option key={category} value={category}>{category}</option>
+                                            ))}
+                                            <option value="new">Add new category</option>
+                                        </select>
+                                        {showNewCategoryInput && (
+                                            <input type="text" className="form-control mt-2" placeholder="Enter new category" value={newCategory} onChange={(e) => setNewCategory(e.target.value)} required />
+                                        )}
                                         {formik.touched.category && formik.errors.category ? <div className="error-message">{formik.errors.category}</div> : null}
                                     </div>
                                     <div className="form-group">
                                         <label>Sub-Category:</label>
-                                        <input type="text" className="form-control" name="subCategory" value={formik.values.subCategory} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                                        <select className="form-control" name="subCategory" value={formik.values.subCategory} onChange={(e) => {
+                                            formik.handleChange(e);
+                                            setShowNewSubCategoryInput(e.target.value === 'new');
+                                        }} onBlur={formik.handleBlur} required>
+                                            <option value="">Select sub-category</option>
+                                            {subCategories.map(subCategory => (
+                                                <option key={subCategory} value={subCategory}>{subCategory}</option>
+                                            ))}
+                                            <option value="new">Add new sub-category</option>
+                                        </select>
+                                        {showNewSubCategoryInput && (
+                                            <input type="text" className="form-control mt-2" placeholder="Enter new sub-category" value={newSubCategory} onChange={(e) => setNewSubCategory(e.target.value)} required />
+                                        )}
                                         {formik.touched.subCategory && formik.errors.subCategory ? <div className="error-message">{formik.errors.subCategory}</div> : null}
                                     </div>
                                     <div className="form-group">

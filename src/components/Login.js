@@ -14,7 +14,7 @@ function Login() {
             return;
         }
 
-        axios.post(`${BASE_URL}/login`, { username, password })  // Full URL of the backend
+        axios.post(`${BASE_URL}/login`, { username, password })
             .then((res) => {
                 if (res.data.status === "success") {
                     alert("Successfully logged in!");
@@ -29,23 +29,23 @@ function Login() {
             })
             .catch((error) => {
                 console.error("Login error:", error);
-                setErrorMessage("An error occurred. Please try again later");
+                setErrorMessage("An error occurred. Please try again later.");
             });
     };
 
     return (
         <div className='login-bg'>
             <div className="login-form">
-                <h2>Login</h2>
+                <h2>Sabari</h2>
                 {errorMessage && <div className="error-message">{errorMessage}</div>}
                 <form onSubmit={handleSubmit}>
                     <div className="forms-group">
                         <label htmlFor="username">Username</label><br />
-                        <input type="text" id="username" name="username" value={username} onChange={(e) => setUsername(e.target.value)} placeholder='Email' required autocomplete="username"/>
+                        <input type="text" id="username" name="username" value={username} onChange={(e) => setUsername(e.target.value)} placeholder='Email' required/>
                     </div>
                     <div className="forms-group">
                         <label htmlFor="password">Password</label><br />
-                        <input type="password" id="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder='Password' required autocomplete="current-password"/>
+                        <input type="password" id="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder='Password' required />
                     </div>
                     <button type="submit">Submit</button>
                 </form>
