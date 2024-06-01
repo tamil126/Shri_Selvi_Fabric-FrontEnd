@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import { BASE_URL } from '../config/constant';
 
 function SareeDesign() {
     const [weaverOptions, setWeaverOptions] = useState([]);
@@ -17,7 +18,7 @@ function SareeDesign() {
 
     const fetchWeaverOptions = async () => {
         try {
-            const response = await axios.get('https://www.newrainbowsarees.in/api/weavers');
+            const response = await axios.get(`${BASE_URL}/weavers`);
             setWeaverOptions(response.data);
         } catch (error) {
             console.error('Error fetching weaver options:', error);
@@ -27,7 +28,7 @@ function SareeDesign() {
 
     const fetchSareeDesigns = async () => {
         try {
-            const response = await axios.get('https://www.newrainbowsarees.in/api/saree-designs');
+            const response = await axios.get(`${BASE_URL}/saree-designs`);
             setSareeDesigns(response.data);
         } catch (error) {
             console.error('Error fetching saree designs:', error);
@@ -55,7 +56,7 @@ function SareeDesign() {
             formData.append('image', values.image);
 
             try {
-                await axios.post('https://www.newrainbowsarees.in/api/saree-designs', formData, {
+                await axios.post(`${BASE_URL}/api/saree-designs`, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     }
@@ -76,7 +77,7 @@ function SareeDesign() {
         formik.setFieldValue('loom', '');
 
         try {
-            const response = await axios.get(`https://www.newrainbowsarees.in/api/loom-numbers/${selectedWeaver}`);
+            const response = await axios.get(`${BASE_URL}/loom-numbers/${selectedWeaver}`);
             setLoomOptions(response.data);
         } catch (error) {
             console.error('Error fetching loom numbers:', error);
@@ -162,7 +163,7 @@ function SareeDesign() {
                         {sareeDesigns.map((design, index) => (
                             <tr key={design.id}>
                                 <td>{index + 1}</td>
-                                <td><img src={`https://www.newrainbowsarees.in/${design.image}`} alt={`Design ${index + 1}`} /></td>
+                                <td><img src={`${BASE_URL}/${design.image}`} alt={`Design ${index + 1}`} /></td>
                                 <td>{design.weaverName}</td>
                                 <td>{design.loomNumber}</td>
                             </tr>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { BASE_URL } from '../config/constant';
 
 function Home() {
     const [weavers, setWeavers] = useState([]);
@@ -11,10 +12,10 @@ function Home() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const weaversResponse = await axios.get("https://www.newrainbowsarees.in/api/weavers");
+                const weaversResponse = await axios.get(`${BASE_URL}/weavers`);
                 setWeavers(weaversResponse.data);
 
-                const sareeDesignsResponse = await axios.get("https://www.newrainbowsarees.in/api/saree-designs");
+                const sareeDesignsResponse = await axios.get(`${BASE_URL}/saree-designs`);
                 setSareeDesigns(sareeDesignsResponse.data);
 
                 setLoading(false);
