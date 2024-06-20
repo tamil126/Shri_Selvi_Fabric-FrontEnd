@@ -1,0 +1,220 @@
+body {
+    background-color: #f8f9fa;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.heading h2 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    animation: fadeInDown 1s;
+}
+
+.companyHeading {
+    font-size: 3rem;
+    color: #fdfdfd;
+    margin-bottom: 20px;
+}
+
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.filters label {
+    margin-right: 10px;
+}
+
+.filters input,
+.filters select {
+    margin-right: 20px;
+    padding: 5px 10px;
+    margin-bottom: 10px;
+}
+
+.transaction-table th,
+.transaction-table td {
+    text-align: center;
+    border: 1px solid #dddddd;
+    border-radius: 5px;
+    padding: 8px;
+}
+
+.transaction-table th {
+    background-color: #343a40;
+    color: #fff;
+}
+
+.transaction-table td {
+    background-color: #fff;
+}
+
+.totals {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-evenly;
+    padding: 10px;
+    background-color: #f2f2f2;
+    border-radius: 5px;
+    flex-wrap: wrap;
+}
+
+.transaction-form,
+.update-transaction {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    animation: fadeInUp 3s;
+}
+
+.transaction-form h2,
+.update-transaction h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+.companyName {
+    text-align: center;
+    background: linear-gradient(90deg, #314c67, #3498db);
+    color: white;
+    padding: 20px 0;
+}
+
+.companyHeading {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.navigation-buttons {
+    display: flex;
+    justify-content: flex-start;
+    gap: 10px;
+    padding-top: 10px;
+    margin-top: 10px;
+}
+
+.navigation-button {
+    width: 160px;
+}
+
+.transaction-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.transaction-table tbody tr:hover {
+    background-color: #e8e7e7;
+}
+
+.error-message {
+    color: red;
+    margin-top: 5px;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+    .filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filters label,
+    .filters input,
+    .filters select {
+        margin-bottom: 10px;
+    }
+
+    .totals {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .navigation-buttons {
+        flex-direction: column;
+        /* align-items: center; */
+    }
+
+    .navigation-button {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .transaction-page {
+        padding: 10px;
+    }
+
+    .transaction-form,
+    .update-transaction {
+        padding: 15px;
+    }
+}
+
+@media (max-width: 576px) {
+    .heading h2 {
+        font-size: 2rem;
+    }
+
+    .companyHeading {
+        font-size: 1.5rem;
+    }
+
+    .totals h4 {
+        font-size: 1.2rem;
+    }
+
+    .transaction-form h2,
+    .update-transaction h2 {
+        font-size: 1.5rem;
+    }
+
+    .transaction-table {
+        font-size: 0.9rem;
+    }
+}

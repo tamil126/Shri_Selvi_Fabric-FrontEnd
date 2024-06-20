@@ -1,0 +1,194 @@
+body {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  background-color: #f8f9fa;
+  }
+  
+  .companyName {
+    text-align: center;
+    background: linear-gradient(90deg, #314c67, #3498db);
+    color: white;
+    padding: 20px 0;
+  }
+  
+  .companyHeading {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: bold;
+  }
+  
+  .navigation-buttons {
+    display: flex;
+    justify-content: flex-start;
+    gap: 10px;
+    padding-top: 10px;
+    margin-top: 10px;
+  }
+  
+  .navigation-button {
+    width: 160px;
+  }
+  
+  .add-saree,
+  .view-saree {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+  }
+  
+  .saree-table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+  }
+  
+  .saree-table th,
+  .saree-table td {
+    padding: 15px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .saree-table th {
+    background-color: #2c3e50;
+    color: white;
+  }
+  
+  .saree-table tr:hover {
+    background-color: #f1f1f1;
+    cursor: pointer;
+  }
+  
+  .design-details {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .design-details img {
+    margin: 10px;
+    transition: transform 0.3s;
+  }
+  
+  .design-details img:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  .design-details-heading {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #3498db;
+  }
+  
+  .error-message {
+    color: red;
+    font-weight: bold;
+  }
+  
+  .design-buttons {
+    margin-top: 20px;
+  }
+  
+  .design-buttons .btn {
+    margin-right: 10px;
+  }
+  
+  .design-images {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .design-images > div {
+    flex: 1 1 150px;
+    margin: 10px;
+  }
+  
+  .design-images img {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  .text-center {
+    text-align: center;
+  }
+  
+  .my-2 {
+    margin: 10px 0;
+  }
+  
+  .my-5 {
+    margin: 30px 0;
+  }
+  
+  .form-group input[type="file"] {
+    width: 80%;
+    margin: 0 auto;
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    /* align-items: center; */
+    font-weight: bold;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 1024px) {
+    .navigation-buttons {
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+  
+    .navigation-button {
+      width: auto;
+      margin: 5px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .companyHeading {
+      font-size: 1.8rem;
+    }
+  
+    .saree-table th,
+    .saree-table td {
+      padding: 10px;
+    }
+  
+    .design-images {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .design-images > div {
+      width: 100%;
+      max-width: 300px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .companyHeading {
+      font-size: 1.5rem;
+    }
+  
+    .design-details {
+      padding: 10px;
+    }
+  
+    .design-images > div {
+      max-width: 100%;
+    }
+  
+    .form-group input[type="file"] {
+      width: 100%;
+    }
+  
+    .form-group {
+      align-items: flex-start;
+    }
+  }
+  

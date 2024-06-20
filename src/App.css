@@ -195,7 +195,7 @@ button[type="submit"]:hover {
   border-color: #6c757d;
 }
 
-.navigation-buttons-top-left {
+/* .navigation-buttons-top-left {
   display: flex;
   justify-content: space-between;
   width: 30%;
@@ -205,22 +205,22 @@ button[type="submit"]:hover {
   padding-top: 20px;
 }
 
-.navigation-buttons {
+.navigation-buttons { */
   /* position: fixed;
   top: 0;
   left: 0; */
-  width: 100%;
-  background-color: #c7fffaf9;
+  /* width: 100%;
+  background-color: #c7fffaf9; */
   /* z-index: 999; */
-  padding: 1%;
+  /* padding: 1%;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.companyHeading {
+.companyHeading { */
   /* left: 30;
   position: relative;
   align-items: center; */
-  margin-bottom: 10px;
+  /* margin-bottom: 10px;
 }
 
 .nav-links {
@@ -272,9 +272,9 @@ button[type="submit"]:hover {
 
 .transHeading {
   text-align: center;
-}
+} */
 
-.heading {
+/* .heading {
   margin-top: 1%;
   text-align: center;
   margin-bottom: 20px;
@@ -324,9 +324,9 @@ button[type="submit"]:hover {
   padding: 10px;
   background-color: #f2f2f2;
   border-radius: 5px;
-}
+} */
 
-.totals h4 {
+/* .totals h4 {
   margin-bottom: 10px;
 }
 
@@ -338,7 +338,7 @@ button[type="submit"]:hover {
   }
 } */
 
-.form-group {
+/* .form-group {
   margin-bottom: 20px;
 }
 
@@ -360,7 +360,7 @@ button[type="submit"]:hover {
   width: 100%;
   padding: 10px;
   box-sizing: border-box;
-}
+} */ 
 
 .weaver-page {
   width: 99%;
@@ -499,12 +499,12 @@ button[type="submit"]:hover {
   height: auto;
 }
 
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
   .navigation-buttons {
     flex-direction: column;
     align-items: flex-start;
   }
-}
+} */
 
 button {
   padding: 10px 20px;
@@ -524,7 +524,7 @@ button:hover {
   margin-bottom: 20px;
 } 
 
-.saree-design-preview {
+/* .saree-design-preview {
   padding: 20px;
   background-color: #fff;
   border-radius: 5px;
@@ -550,15 +550,12 @@ button:hover {
   max-width: 150px;
   height: auto;
   border-radius: 5px;
-  /* Add border radius to images */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  /* Add box shadow to images */
   transition: transform 0.3s ease;
 }
 
 .saree-design-preview img:hover {
   transform: scale(1.05);
-  /* Scale up image on hover */
 }
 
 .saree-table tbody tr:nth-child(even) {
@@ -598,7 +595,7 @@ button:hover {
 .weaver-name {
   margin-top: 10px;
   color: #6c757d;
-}
+} */
 
 .weavers-table th {
   background-color: #007bff;

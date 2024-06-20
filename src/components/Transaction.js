@@ -5,6 +5,8 @@ import * as XLSX from 'xlsx';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { BASE_URL } from '../config/constant';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './Transaction.css';
 
 function Transaction() {
     const [recentTransactions, setRecentTransactions] = useState([]);
@@ -19,6 +21,7 @@ function Transaction() {
     const [newSubCategory, setNewSubCategory] = useState('');
     const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
     const [showNewSubCategoryInput, setShowNewSubCategoryInput] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -36,6 +39,7 @@ function Transaction() {
             setRecentTransactions(formattedTransactions);
         } catch (error) {
             console.error('Error fetching recent transactions:', error);
+            setErrorMessage('Failed to load recent transactions. Please try again later.');
         }
     };
 
@@ -46,7 +50,13 @@ function Transaction() {
             setSubCategories(response.data.subCategories);
         } catch (error) {
             console.error('Error fetching categories and subcategories:', error);
+            setErrorMessage('Failed to load categories and subcategories. Please try again later.');
         }
+    };
+
+    const formatDateForDisplay = (dateString) => {
+        const date = new Date(dateString);
+        return date.toLocaleDateString();
     };
 
     const formik = useFormik({
@@ -89,16 +99,12 @@ function Transaction() {
                 values.files.forEach(file => {
                     formDataForRequest.append('files', file);
                 });
-
-                console.log("Submitting form data:", formDataForRequest); // Debugging line
-
+                // eslint-disable-next-line no-unused-vars
                 const response = await axios.post(`${BASE_URL}/transactions`, formDataForRequest, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     }
                 });
-
-                console.log(response.data);
                 resetForm();
                 setNewCategory('');
                 setNewSubCategory('');
@@ -108,6 +114,7 @@ function Transaction() {
                 fetchCategoriesAndSubCategories();
             } catch (error) {
                 console.error('Error submitting transaction:', error);
+                setErrorMessage('Failed to submit transaction. Please try again later.');
             }
         }
     });
@@ -161,15 +168,12 @@ function Transaction() {
             formik.values.files.forEach(file => {
                 formDataForRequest.append('files', file);
             });
-
-            console.log("Updating form data:", formDataForRequest); // Debugging line
-
-            await axios.put(`${BASE_URL}/transactions/${selectedTransaction.id}`, formDataForRequest, {
+            // eslint-disable-next-line no-unused-vars
+            const response = await axios.put(`${BASE_URL}/transactions/${selectedTransaction.id}`, formDataForRequest, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             });
-
             setSelectedTransaction(null);
             formik.resetForm();
             setNewCategory('');
@@ -181,6 +185,7 @@ function Transaction() {
             navigate('/transaction', { replace: true });
         } catch (error) {
             console.error('Error updating transaction:', error);
+            setErrorMessage('Failed to update transaction. Please try again later.');
         }
     };
 
@@ -210,21 +215,22 @@ function Transaction() {
     return (
         <div className="transaction-page">
             <div className="row">
-                <div className="navigation-buttons">
-                    <div className='companyName'>
-                        <h2 className='companyHeading text-center'>Shri Selvi Fabric</h2>
-                        <Link to="/home" className="btn btn-secondary navigation-button">Home</Link>
-                        <Link to="/transaction" className="btn btn-primary navigation-button">Transaction</Link>
-                        <Link to="/weaver" className="btn btn-secondary navigation-button">Weaver</Link>
-                        <Link to="/sareedesign" className="btn btn-secondary navigation-button">Saree Design</Link>
+                <div className="col-md-12">
+                    <div className="companyName">
+                        <h2 className="companyHeading">Shri Selvi Fabric</h2>
+                        <div className="navigation-buttons">
+                            <Link to="/home" className="btn btn-secondary navigation-button">Home</Link>
+                            <Link to="/transaction" className="btn btn-primary navigation-button">Transaction</Link>
+                            <Link to="/weaver" className="btn btn-secondary navigation-button">Weaver</Link>
+                            <Link to="/sareedesign" className="btn btn-secondary navigation-button">Saree Design</Link>
+                        </div>
                     </div>
                 </div>
-
                 <div className="col-md-3 col-sm-12 topSpace">
                     {selectedTransaction ? (
                         <div className="update-transaction">
                             <h2 className='text-center'>Update Transaction</h2>
-                            <form onSubmit={handleUpdateSubmit}>
+                            <form onSubmit={handleUpdateSubmit} autocomplete="off">
                                 <div className="form-group">
                                     <label>Date:</label>
                                     <input type="date" className="form-control" name="date" value={formik.values.date} onChange={formik.handleChange} onBlur={formik.handleBlur} required />
@@ -297,7 +303,7 @@ function Transaction() {
                             <div className="transaction-form">
                                 <h2 className='transHeading'>Add Transaction</h2>
                                 {formik.errors.general && <div className="error-message">{formik.errors.general}</div>}
-                                <form onSubmit={formik.handleSubmit}>
+                                <form onSubmit={formik.handleSubmit} autocomplete="off">
                                     <div className="form-group">
                                         <label>Date:</label>
                                         <input type="date" className="form-control" name="date" value={formik.values.date} onChange={formik.handleChange} onBlur={formik.handleBlur} required />
@@ -367,10 +373,11 @@ function Transaction() {
                         </div>
                     )}
                 </div>
-                <div className="col-md-9">
+                <div className="col-md-9 col-sm-12">
                     <div className='heading'>
                         <h2>Recent Transactions</h2>
                     </div>
+                    {errorMessage && <div className="error-message">{errorMessage}</div>}
                     <div className="filters">
                         <label>Start Date:</label>
                         <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
@@ -389,15 +396,15 @@ function Transaction() {
                             <option value="all">All Transactions</option>
                         </select>
                     </div>
-
                     <div className="totals">
-                        <h4>Total Income: ₹{totalIncome}</h4>
-                        <h4>Total Expense: ₹{totalExpense}</h4>
-                        <h4>Total Balance: ₹{totalBalance}</h4>
+                        {typeFilter === 'all' && <h4>Total Income: ₹{totalIncome}</h4>}
+                        {typeFilter === 'all' && <h4>Total Expense: ₹{totalExpense}</h4>}
+                        {typeFilter === 'all' && <h4>Total Balance: ₹{totalBalance}</h4>}
+                        {typeFilter === 'income' && <h4>Total Income: ₹{totalIncome}</h4>}
+                        {typeFilter === 'expense' && <h4>Total Expense: ₹{totalExpense}</h4>}
                         <button className="btn btn-primary" onClick={exportToCSV}>Export to CSV</button>
                     </div>
-
-                    <table className="transaction-table">
+                    <table className="transaction-table table table-striped table-bordered">
                         <thead>
                             <tr>
                                 <th>Date</th>
@@ -412,7 +419,7 @@ function Transaction() {
                         <tbody>
                             {filteredTransactions.sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, transactionCount === 'all' ? filteredTransactions.length : transactionCount).map(transaction => (
                                 <tr key={transaction.id}>
-                                    <td>{new Date(transaction.date).toLocaleDateString()}</td>
+                                    <td>{formatDateForDisplay(transaction.date)}</td>
                                     <td>{transaction.type}</td>
                                     <td>₹ {transaction.amount}</td>
                                     <td>{transaction.category}</td>
