@@ -230,15 +230,15 @@ function Transaction() {
                     {selectedTransaction ? (
                         <div className="update-transaction">
                             <h2 className='text-center'>Update Transaction</h2>
-                            <form onSubmit={handleUpdateSubmit} autocomplete="off">
+                            <form onSubmit={handleUpdateSubmit} >
                                 <div className="form-group">
                                     <label>Date:</label>
-                                    <input type="date" className="form-control" name="date" value={formik.values.date} onChange={formik.handleChange} onBlur={formik.handleBlur} required />
+                                    <input type="date" className="form-control" name="date" value={formik.values.date} onChange={formik.handleChange} onBlur={formik.handleBlur} required autoComplete='new'/>
                                     {formik.touched.date && formik.errors.date ? <div className="error-message">{formik.errors.date}</div> : null}
                                 </div>
                                 <div className="form-group">
                                     <label>Type:</label>
-                                    <select className="form-control" name="type" value={formik.values.type} onChange={formik.handleChange} onBlur={formik.handleBlur} required>
+                                    <select className="form-control" name="type" value={formik.values.type} onChange={formik.handleChange} onBlur={formik.handleBlur} required >
                                         <option value="">Select type</option>
                                         <option value="expense">Expense</option>
                                         <option value="income">Income</option>
@@ -247,7 +247,7 @@ function Transaction() {
                                 </div>
                                 <div className="form-group">
                                     <label>Amount:</label>
-                                    <input type="tel" className="form-control" name="amount" value={formik.values.amount} onChange={formik.handleChange} onBlur={formik.handleBlur} required />
+                                    <input type="tel" className="form-control" name="amount" value={formik.values.amount} onChange={formik.handleChange} onBlur={formik.handleBlur} required autoComplete='new' />
                                     {formik.touched.amount && formik.errors.amount ? <div className="error-message">{formik.errors.amount}</div> : null}
                                 </div>
                                 <div className="form-group">
@@ -303,7 +303,7 @@ function Transaction() {
                             <div className="transaction-form">
                                 <h2 className='transHeading'>Add Transaction</h2>
                                 {formik.errors.general && <div className="error-message">{formik.errors.general}</div>}
-                                <form onSubmit={formik.handleSubmit} autocomplete="off">
+                                <form onSubmit={formik.handleSubmit}>
                                     <div className="form-group">
                                         <label>Date:</label>
                                         <input type="date" className="form-control" name="date" value={formik.values.date} onChange={formik.handleChange} onBlur={formik.handleBlur} required />

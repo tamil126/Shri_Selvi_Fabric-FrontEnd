@@ -1,0 +1,74 @@
+/* Home.css */
+.home_m{
+    margin: 0;
+    padding: 0;
+}
+/* Company Name Styles */
+.companyName {
+    text-align: center;
+    background: linear-gradient(90deg, #314c67, #3498db);
+    color: white;
+    padding: 20px 0;
+}
+
+.companyHeading {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+/* Navigation Buttons Styles */
+.navigation-buttons {
+    display: flex;
+    justify-content: flex-start; /* Align items from the start */
+    gap: 10px;
+    /* padding-top: 10px; */
+    /* margin-top: 10px; */
+}
+
+.navigation-button {
+    width: 160px;
+}
+
+/* Data Container Styles */
+.data-container {
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* Saree Design Preview Section Styles */
+.saree-design-preview {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.featured-image {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+/* Center align text inside saree-design-preview */
+.saree-design-preview h3 {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .companyHeading {
+        font-size: 24px;
+    }
+    
+    .navigation-button {
+        margin-right: 5px;
+    }
+    
+    .introduction {
+        font-size: 20px;
+    }
+}

@@ -9,6 +9,10 @@ body {
     animation: fadeInDown 1s;
 }
 
+.companyName{
+    width: 101%;
+}
+
 .companyHeading {
     font-size: 3rem;
     color: #fdfdfd;
@@ -92,8 +96,8 @@ body {
     display: flex;
     justify-content: flex-start;
     gap: 10px;
-    padding-top: 10px;
-    margin-top: 10px;
+    /* padding-top: 10px; */
+    /* margin-top: 10px; */
 }
 
 .navigation-button {
