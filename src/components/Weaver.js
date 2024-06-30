@@ -89,10 +89,17 @@ const Weaver = () => {
 
     const handleInputChange = (e) => {
         const { name, value, files } = e.target;
-        setFormData({
-            ...formData,
-            [name]: files ? files[0] : value
-        });
+        if (name === 'idProof') {
+            setFormData(prevFormData => ({
+                ...prevFormData,
+                idProof: files[0]
+            }));
+        } else {
+            setFormData({
+                ...formData,
+                [name]: files ? files[0] : value
+            });
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -252,6 +259,9 @@ const Weaver = () => {
             newJacquardType: '',
             newDesignName: ''
         });
+        document.getElementById('idProof').value = null;
+        document.getElementById('planSheet').value = null;
+        document.getElementById('designUpload').value = null;
     };
 
     const handleKeyPress = (e) => {

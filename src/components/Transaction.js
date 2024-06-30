@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
@@ -23,6 +23,7 @@ function Transaction() {
     const [showNewSubCategoryInput, setShowNewSubCategoryInput] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
+    const fileInputRef = useRef(null);
 
     useEffect(() => {
         fetchRecentTransactions();
@@ -112,6 +113,9 @@ function Transaction() {
                 setShowNewSubCategoryInput(false);
                 fetchRecentTransactions();
                 fetchCategoriesAndSubCategories();
+                if (fileInputRef.current) {
+                    fileInputRef.current.value = '';
+                }
             } catch (error) {
                 console.error('Error submitting transaction:', error);
                 setErrorMessage('Failed to submit transaction. Please try again later.');
@@ -183,6 +187,9 @@ function Transaction() {
             fetchRecentTransactions();
             fetchCategoriesAndSubCategories();
             navigate('/transaction', { replace: true });
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
         } catch (error) {
             console.error('Error updating transaction:', error);
             setErrorMessage('Failed to update transaction. Please try again later.');
