@@ -298,7 +298,7 @@ const Weaver = () => {
 
                     <div className="con">
                         {error && <div className="alert alert-danger">{error}</div>}
-                        <form onSubmit={handleSubmit}>
+                        <form onSubmit={handleSubmit} enctype="multipart/form-data">
                             <h2>{isUpdating ? `Update ${formType.charAt(0).toUpperCase() + formType.slice(1)}` : `Add ${formType.charAt(0).toUpperCase() + formType.slice(1)}`}</h2>
                             {formType === 'weaver' && (
                                 <>
