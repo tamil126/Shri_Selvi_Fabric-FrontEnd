@@ -8,7 +8,7 @@ import Weaver from './components/Weaver';
 import SareeDesign from './components/SareeDesign';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { AuthProvider } from './authContext';
-import  RequireAuth  from './RequireAuth';
+import RequireAuth from './RequireAuth';
 
 function App() {
     return (
@@ -39,7 +39,7 @@ function App() {
             </Routes>
           </Router>
         </AuthProvider>
-      );
-    }
-  
-  export default App;
+    );
+}
+
+export default App;

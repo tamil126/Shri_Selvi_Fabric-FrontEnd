@@ -6,14 +6,12 @@ const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
 
     const login = () => {
         setIsLoggedIn(true);
     };
-    
+
     const handleLogin = (username, password) => {
         return axios.post(`${BASE_URL}/login`, { username, password })
          .then((res) => {
@@ -21,8 +19,6 @@ const AuthProvider = ({ children }) => {
               const token = res.data.token;
               sessionStorage.setItem('loginToken', token);
               login();
-              setUsername('');
-              setPassword('');
               setErrorMessage('');
             } else if (res.data.status === "invalid_user") {
               setErrorMessage("Invalid username or password.");
@@ -38,11 +34,11 @@ const AuthProvider = ({ children }) => {
           });
       };
 
-      return (
-        <AuthContext.Provider value={{ isLoggedIn, login, handleLogin, username, setUsername, password, setPassword, errorMessage, setErrorMessage }}>
+    return (
+        <AuthContext.Provider value={{ isLoggedIn, login, handleLogin, errorMessage, setErrorMessage }}>
           {children}
         </AuthContext.Provider>
-      );
+    );
 };
 
 export { AuthProvider, AuthContext };

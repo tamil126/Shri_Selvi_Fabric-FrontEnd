@@ -2,6 +2,12 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { BASE_URL } from '../config/constant';
+import './Weaver.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faDownload } from '@fortawesome/free-solid-svg-icons';
+
+library.add(faDownload);
 
 const Weaver = () => {
     const [weavers, setWeavers] = useState([]);
@@ -125,9 +131,11 @@ const Weaver = () => {
 
     const handleSubmitWeaverForm = async () => {
         const formDataObj = new FormData();
+
         Object.keys(formData).forEach(key => {
             formDataObj.append(key, formData[key]);
         });
+        console.log(formDataObj);
         await axios.post(`${BASE_URL}/weavers`, formDataObj);
     };
 
@@ -214,8 +222,6 @@ const Weaver = () => {
             filteredDesigns = filteredDesigns.filter(design => design.loomName === loomFilter);
         }
         if (loomNumberFilter) {
-            filteredWeavers = filteredWeavers.filter(weaver => weaver.loomNumber === parseInt(loomNumberFilter));
-            filteredLooms = filteredLooms.filter(loom => loom.loomNumber === parseInt(loomNumberFilter));
             filteredDesigns = filteredDesigns.filter(design => design.loomNumber === parseInt(loomNumberFilter));
         }
         setFilteredWeavers(filteredWeavers);
@@ -260,6 +266,19 @@ const Weaver = () => {
         }
     };
 
+    // const downloadFile = (url, filename) => {
+    //     axios.get(url, { responseType: 'blob' })
+    //         .then((response) => {
+    //             const url = window.URL.createObjectURL(new Blob([response.data]));
+    //             const link = document.createElement('a');
+    //             link.href = url;
+    //             link.setAttribute('download', filename);
+    //             document.body.appendChild(link);
+    //             link.click();
+    //         })
+    //         .catch((error) => console.error("Error downloading file:", error));
+    // };
+
     return (
         <div className="con">
             <div className="companyName">
@@ -301,11 +320,11 @@ const Weaver = () => {
                                     </div>
                                     <div className="form-group">
                                         <label htmlFor="mobileNumber1">Mobile Number 1</label>
-                                        <input type="text" className="form-control" id="mobileNumber1" name="mobileNumber1" value={formData.mobileNumber1} onChange={handleInputChange} onKeyDown={handleKeyPress} required />
+                                        <input type="text" className="form-control" id="mobileNumber1" name="mobileNumber1" value={formData.mobileNumber1} onChange={handleInputChange} onKeyDown={handleKeyPress} required pattern="\d{10}" title="Please enter a valid 10-digit mobile number" />
                                     </div>
                                     <div className="form-group">
                                         <label htmlFor="mobileNumber2">Mobile Number 2</label>
-                                        <input type="text" className="form-control" id="mobileNumber2" name="mobileNumber2" value={formData.mobileNumber2} onChange={handleInputChange} onKeyDown={handleKeyPress} />
+                                        <input type="text" className="form-control" id="mobileNumber2" name="mobileNumber2" value={formData.mobileNumber2} onChange={handleInputChange} onKeyDown={handleKeyPress} pattern="\d{10}" title="Please enter a valid 10-digit mobile number" />
                                     </div>
                                     <div className="form-group">
                                         <label htmlFor="reference">Reference</label>
@@ -318,7 +337,6 @@ const Weaver = () => {
                                     <div className="form-group">
                                         <label htmlFor="idProof">ID Proof</label>
                                         <input type="file" className="form-control" id="idProof" name="idProof" onChange={handleInputChange} onKeyDown={handleKeyPress} required />
-                                        {formData.idProof && <a href={formData.idProof} target="_blank" rel="noopener noreferrer">View existing ID Proof</a>}
                                     </div>
                                 </>
                             )}
@@ -335,7 +353,12 @@ const Weaver = () => {
                                     </div>
                                     <div className="form-group">
                                         <label htmlFor="loomNumber">Loom Number</label>
-                                        <input type="number" className="form-control" id="loomNumber" name="loomNumber" value={formData.loomNumber} onChange={handleInputChange} onKeyDown={handleKeyPress} required />
+                                        <select className="form-control" id="loomNumber" name="loomNumber" value={formData.loomNumber} onChange={handleInputChange} onKeyDown={handleKeyPress} required>
+                                            <option value="">Select Loom Number</option>
+                                            {loomNumbers.map((number) => (
+                                                <option key={number} value={number}>{number}</option>
+                                            ))}
+                                        </select>
                                     </div>
                                     <div className="form-group">
                                         <label htmlFor="loomType">Loom Type</label>
@@ -365,7 +388,7 @@ const Weaver = () => {
                                     </div>
                                     <div className="form-group">
                                         <label htmlFor="hooks">Hooks</label>
-                                        <input type="number" className="form-control" id="hooks" name="hooks" value={formData.hooks} onChange={handleInputChange} onKeyDown={handleKeyPress} required />
+                                        <input type="number" className="form-control" id="hooks" name="hooks" value={formData.hooks} onChange={handleInputChange} onKeyDown={handleKeyPress} required min="0" />
                                     </div>
                                     <div className="form-group">
                                         <label htmlFor="description">Description</label>
@@ -413,12 +436,10 @@ const Weaver = () => {
                                     <div className="form-group">
                                         <label htmlFor="planSheet">Plan Sheet</label>
                                         <input type="file" className="form-control" id="planSheet" name="planSheet" onChange={handleInputChange} onKeyDown={handleKeyPress} required={!formData.planSheet} />
-                                        {formData.planSheet && <a href={formData.planSheet} target="_blank" rel="noopener noreferrer">View existing Plan Sheet</a>}
                                     </div>
                                     <div className="form-group">
                                         <label htmlFor="designUpload">Design Upload</label>
                                         <input type="file" className="form-control" id="designUpload" name="designUpload" onChange={handleInputChange} onKeyDown={handleKeyPress} required={!formData.designUpload} />
-                                        {formData.designUpload && <a href={formData.designUpload} target="_blank" rel="noopener noreferrer">View existing Design Upload</a>}
                                     </div>
                                 </>
                             )}
@@ -429,7 +450,16 @@ const Weaver = () => {
                 <div className="col-lg-9">
                     <div className="form-group">
                         <label htmlFor="loomFilter">Filter by Loom Name</label>
-                        <select className="form-control" id="loomFilter" value={loomFilter} onChange={(e) => setLoomFilter(e.target.value)}>
+                        <select className="form-control" id="loomFilter" value={loomFilter} onChange={(e) => {
+                            const loomName = e.target.value;
+                            setLoomFilter(loomName);
+                            const loom = looms.find((l) => l.loomName === loomName);
+                            if (loom) {
+                                setLoomNumbers(Array.from({ length: loom.loomNumber }, (_, i) => i + 1));
+                            } else {
+                                setLoomNumbers([]);
+                            }
+                        }}>
                             <option value="">All</option>
                             {looms.map((loom) => (
                                 <option key={loom.id} value={loom.loomName}>{loom.loomName}</option>
@@ -450,7 +480,6 @@ const Weaver = () => {
                     <table className="table">
                         <thead>
                             <tr>
-                                <th>Date</th>
                                 <th>Weaver Name</th>
                                 <th>Loom Name</th>
                                 <th>Address</th>
@@ -466,16 +495,16 @@ const Weaver = () => {
                         <tbody>
                             {filteredWeavers.map((weaver) => (
                                 <tr key={weaver.id}>
-                                    <td>{new Date(weaver.date).toLocaleDateString()}</td>
                                     <td>{weaver.weaverName}</td>
                                     <td>{weaver.loomName}</td>
                                     <td>{weaver.address}</td>
                                     <td>{weaver.area}</td>
                                     <td>{weaver.mobileNumber1}</td>
-                                    <td>{weaver.mobileNumber2}</td>
+                                    <td>{weaver.mobileNumber2 || "No Number"}</td>
                                     <td>{weaver.reference}</td>
                                     <td>{weaver.description}</td>
-                                    <td><a href={weaver.idProof} target="_blank" rel="noopener noreferrer">View</a></td>
+                                    <td><a href={weaver.idProof} target="_blank" rel="noopener noreferrer" className="download-link">
+                                    <FontAwesomeIcon icon={faDownload} />Download</a></td>
                                     <td><button className="btn btn-secondary" onClick={() => handleUpdateClick(weaver, 'weaver')}>Update</button></td>
                                 </tr>
                             ))}
@@ -528,8 +557,8 @@ const Weaver = () => {
                                     <td>{design.loomNumber}</td>
                                     <td>{design.designName}</td>
                                     <td>{design.designBy}</td>
-                                    <td><a href={design.planSheet} target="_blank" rel="noopener noreferrer">View</a></td>
-                                    <td><a href={design.designUpload} target="_blank" rel="noopener noreferrer">View</a></td>
+                                    <td>{design.planSheet ? <img src={design.planSheet} alt="Plan Sheet" className="img-thumbnail" /> : "No Plan Sheet"}</td>
+                                    <td>{design.designUpload ? <img src={design.designUpload} alt="Design Upload" className="img-thumbnail" /> : "No Design Upload"}</td>
                                     <td><button className="btn btn-secondary" onClick={() => handleUpdateClick(design, 'design')}>Update</button></td>
                                 </tr>
                             ))}
