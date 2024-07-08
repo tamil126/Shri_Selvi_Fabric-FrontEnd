@@ -1,18 +1,23 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { BASE_URL } from '../config/constant';
+import { Button, Form, Table, Row, Col, Alert } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Transaction.css';
+import AdminPasswordPrompt from './AdminPasswordPrompt';  // Import the AdminPasswordPrompt component
+
+const AWS_REGION = 'ap-south-1';
 
 function Transaction() {
     const [recentTransactions, setRecentTransactions] = useState([]);
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [typeFilter, setTypeFilter] = useState('all');
+    const [categoryFilter, setCategoryFilter] = useState('');
     const [transactionCount, setTransactionCount] = useState(10);
     const [selectedTransaction, setSelectedTransaction] = useState(null);
     const [categories, setCategories] = useState([]);
@@ -21,18 +26,29 @@ function Transaction() {
     const [newSubCategory, setNewSubCategory] = useState('');
     const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
     const [showNewSubCategoryInput, setShowNewSubCategoryInput] = useState(false);
+    const [showNewLocationInput, setShowNewLocationInput] = useState(false);
+    const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [searchKeyword, setSearchKeyword] = useState('');
+    const [location, setLocation] = useState('office');
+    const [locations, setLocations] = useState(['office', 'factory', 'store']);
+    const [newLocation, setNewLocation] = useState('');
+    const [adminErrorMessage, setAdminErrorMessage] = useState('');
     const navigate = useNavigate();
-    const fileInputRef = useRef(null);
 
-    useEffect(() => {
-        fetchRecentTransactions();
-        fetchCategoriesAndSubCategories();
-    }, []);
-
-    const fetchRecentTransactions = async () => {
+    const fetchLocations = async () => {
         try {
-            const response = await axios.get(`${BASE_URL}/transactions`);
+            const response = await axios.get(`${BASE_URL}/locations`);
+            setLocations(response.data.locations);
+        } catch (error) {
+            console.error('Error fetching locations:', error);
+            setErrorMessage('Failed to load locations. Please try again later.');
+        }
+    };
+
+    const fetchRecentTransactions = useCallback(async () => {
+        try {
+            const response = await axios.get(`${BASE_URL}/transactions/${location}`);
             const formattedTransactions = response.data.map(transaction => ({
                 ...transaction,
                 date: new Date(transaction.date).toISOString().split('T')[0]
@@ -42,18 +58,24 @@ function Transaction() {
             console.error('Error fetching recent transactions:', error);
             setErrorMessage('Failed to load recent transactions. Please try again later.');
         }
-    };
+    }, [location]);
 
-    const fetchCategoriesAndSubCategories = async () => {
+    const fetchCategoriesAndSubCategories = useCallback(async () => {
         try {
-            const response = await axios.get(`${BASE_URL}/categories`);
+            const response = await axios.get(`${BASE_URL}/categories/${location}`);
             setCategories(response.data.categories);
             setSubCategories(response.data.subCategories);
         } catch (error) {
             console.error('Error fetching categories and subcategories:', error);
             setErrorMessage('Failed to load categories and subcategories. Please try again later.');
         }
-    };
+    }, [location]);
+
+    useEffect(() => {
+        fetchLocations();
+        fetchRecentTransactions();
+        fetchCategoriesAndSubCategories();
+    }, [location, fetchRecentTransactions, fetchCategoriesAndSubCategories]);
 
     const formatDateForDisplay = (dateString) => {
         const date = new Date(dateString);
@@ -62,7 +84,7 @@ function Transaction() {
 
     const formik = useFormik({
         initialValues: {
-            date: '',
+            date: new Date().toISOString().split('T')[0],
             type: '',
             amount: '',
             category: '',
@@ -89,9 +111,8 @@ function Transaction() {
         }),
         onSubmit: async (values, { resetForm }) => {
             try {
-                const formattedDate = new Date(values.date).toISOString().split('T')[0];
                 const formDataForRequest = new FormData();
-                formDataForRequest.append('date', formattedDate);
+                formDataForRequest.append('date', values.date);
                 formDataForRequest.append('type', values.type);
                 formDataForRequest.append('amount', values.amount);
                 formDataForRequest.append('category', showNewCategoryInput ? newCategory : values.category);
@@ -101,7 +122,7 @@ function Transaction() {
                     formDataForRequest.append('files', file);
                 });
                 // eslint-disable-next-line no-unused-vars
-                const response = await axios.post(`${BASE_URL}/transactions`, formDataForRequest, {
+                const response = await axios.post(`${BASE_URL}/transactions/${location}`, formDataForRequest, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     }
@@ -113,9 +134,6 @@ function Transaction() {
                 setShowNewSubCategoryInput(false);
                 fetchRecentTransactions();
                 fetchCategoriesAndSubCategories();
-                if (fileInputRef.current) {
-                    fileInputRef.current.value = '';
-                }
             } catch (error) {
                 console.error('Error submitting transaction:', error);
                 setErrorMessage('Failed to submit transaction. Please try again later.');
@@ -139,22 +157,40 @@ function Transaction() {
 
     const handleUpdateClick = (transaction) => {
         setSelectedTransaction(transaction);
-        formik.setValues({
-            date: transaction.date,
-            type: transaction.type,
-            amount: transaction.amount,
-            category: transaction.category,
-            subCategory: transaction.subCategory,
-            description: transaction.description,
-            files: transaction.files || []
-        });
-        setShowNewCategoryInput(false);
-        setShowNewSubCategoryInput(false);
+        setShowPasswordPrompt(true);
+    };
+
+    const handlePasswordConfirm = async (username, password) => {
+        try {
+            const response = await axios.post(`${BASE_URL}/admin/verifyPassword`, { username, password });
+            if (response.data.success) {
+                formik.setValues({
+                    date: selectedTransaction.date,
+                    type: selectedTransaction.type,
+                    amount: selectedTransaction.amount,
+                    category: selectedTransaction.category,
+                    subCategory: selectedTransaction.subCategory,
+                    description: selectedTransaction.description,
+                    files: []
+                });
+                setShowNewCategoryInput(false);
+                setShowNewSubCategoryInput(false);
+                setShowPasswordPrompt(false);
+            } else {
+                setAdminErrorMessage(response.data.message);
+                setTimeout(() => setAdminErrorMessage(''), 5000);
+            }
+        } catch (error) {
+            console.error('Error verifying password:', error);
+            setAdminErrorMessage('Failed to verify password. Please try again later.');
+            setTimeout(() => setAdminErrorMessage(''), 5000);
+        }
     };
 
     const handleCancelUpdate = () => {
         setSelectedTransaction(null);
         formik.resetForm();
+        setShowPasswordPrompt(false);
         setShowNewCategoryInput(false);
         setShowNewSubCategoryInput(false);
     };
@@ -173,7 +209,7 @@ function Transaction() {
                 formDataForRequest.append('files', file);
             });
             // eslint-disable-next-line no-unused-vars
-            const response = await axios.put(`${BASE_URL}/transactions/${selectedTransaction.id}`, formDataForRequest, {
+            const response = await axios.put(`${BASE_URL}/transactions/${location}/${selectedTransaction.id}`, formDataForRequest, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
@@ -187,19 +223,40 @@ function Transaction() {
             fetchRecentTransactions();
             fetchCategoriesAndSubCategories();
             navigate('/transaction', { replace: true });
-            if (fileInputRef.current) {
-                fileInputRef.current.value = '';
-            }
         } catch (error) {
             console.error('Error updating transaction:', error);
             setErrorMessage('Failed to update transaction. Please try again later.');
         }
     };
 
+    const handleLocationChange = async (newLocation) => {
+        await checkAndCreateTable(newLocation); // Check and create table if it doesn't exist
+        setLocation(newLocation);
+        fetchRecentTransactions(); // Fetch transactions without delay
+    };
+
+    const checkAndCreateTable = async (tableName) => {
+        try {
+            await axios.post(`${BASE_URL}/transactions/checkAndCreateTable`, { tableName });
+        } catch (error) {
+            console.error('Error creating new table:', error);
+            setErrorMessage('Failed to create new table. Please try again later.');
+        }
+    };
+
+    const handleAddLocation = async () => {
+        await handleLocationChange(newLocation);
+        setLocations([...locations, newLocation]);
+        setNewLocation('');
+        setShowNewLocationInput(false);
+    };
+
     const filteredTransactions = recentTransactions.filter(transaction => {
         if (startDate && transaction.date < startDate) return false;
         if (endDate && transaction.date > endDate) return false;
         if (typeFilter !== 'all' && transaction.type !== typeFilter) return false;
+        if (categoryFilter && transaction.category !== categoryFilter) return false;
+        if (searchKeyword && !transaction.description.toLowerCase().includes(searchKeyword.toLowerCase())) return false;
         return true;
     });
 
@@ -221,8 +278,16 @@ function Transaction() {
 
     return (
         <div className="transaction-page">
-            <div className="row">
-                <div className="col-md-12">
+            {showPasswordPrompt && (
+                <AdminPasswordPrompt
+                    onConfirm={handlePasswordConfirm}
+                    onCancel={handleCancelUpdate}
+                    errorMessage={adminErrorMessage}
+                    username="nrs"
+                />
+            )}
+            <Row>
+                <Col>
                     <div className="companyName">
                         <h2 className="companyHeading">Shri Selvi Fabric</h2>
                         <div className="navigation-buttons">
@@ -232,34 +297,50 @@ function Transaction() {
                             <Link to="/sareedesign" className="btn btn-secondary navigation-button">Saree Design</Link>
                         </div>
                     </div>
-                </div>
-                <div className="col-md-3 col-sm-12 topSpace">
+                </Col>
+            </Row>
+            <Row>
+                <Col md={3} sm={12} className="topSpace">
+                    <div className="location-buttons">
+                        {locations.map(loc => (
+                            <Button key={loc} variant={location === loc ? 'primary' : 'info'} className="mx-2 my-2" onClick={() => handleLocationChange(loc)}>
+                                {loc.charAt(0).toUpperCase() + loc.slice(1)}
+                            </Button>
+                        ))}
+                        <Button variant="success" onClick={() => setShowNewLocationInput(true)}>Add Location</Button>
+                        {showNewLocationInput && (
+                            <div>
+                                <Form.Control type="text" className="mt-2" placeholder="Enter new location" value={newLocation} onChange={(e) => setNewLocation(e.target.value)} />
+                                <Button variant="success" className="mt-2 mx-2" onClick={handleAddLocation}>Create Location</Button>
+                            </div>
+                        )}
+                    </div>
                     {selectedTransaction ? (
                         <div className="update-transaction">
                             <h2 className='text-center'>Update Transaction</h2>
-                            <form onSubmit={handleUpdateSubmit} >
-                                <div className="form-group">
-                                    <label>Date:</label>
-                                    <input type="date" className="form-control" name="date" value={formik.values.date} onChange={formik.handleChange} onBlur={formik.handleBlur} required autoComplete='new'/>
-                                    {formik.touched.date && formik.errors.date ? <div className="error-message">{formik.errors.date}</div> : null}
-                                </div>
-                                <div className="form-group">
-                                    <label>Type:</label>
-                                    <select className="form-control" name="type" value={formik.values.type} onChange={formik.handleChange} onBlur={formik.handleBlur} required >
+                            <Form onSubmit={handleUpdateSubmit}>
+                                <Form.Group>
+                                    <Form.Label>Date:</Form.Label>
+                                    <Form.Control type="date" name="date" value={formik.values.date} onChange={formik.handleChange} onBlur={formik.handleBlur} required max={new Date().toISOString().split('T')[0]} />
+                                    {formik.touched.date && formik.errors.date && <Alert variant="danger">{formik.errors.date}</Alert>}
+                                </Form.Group>
+                                <Form.Group>
+                                    <Form.Label>Type:</Form.Label>
+                                    <Form.Control as="select" name="type" value={formik.values.type} onChange={formik.handleChange} onBlur={formik.handleBlur} required>
                                         <option value="">Select type</option>
                                         <option value="expense">Expense</option>
                                         <option value="income">Income</option>
-                                    </select>
-                                    {formik.touched.type && formik.errors.type ? <div className="error-message">{formik.errors.type}</div> : null}
-                                </div>
-                                <div className="form-group">
-                                    <label>Amount:</label>
-                                    <input type="tel" className="form-control" name="amount" value={formik.values.amount} onChange={formik.handleChange} onBlur={formik.handleBlur} required autoComplete='new' />
-                                    {formik.touched.amount && formik.errors.amount ? <div className="error-message">{formik.errors.amount}</div> : null}
-                                </div>
-                                <div className="form-group">
-                                    <label>Category:</label>
-                                    <select className="form-control" name="category" value={formik.values.category} onChange={(e) => {
+                                    </Form.Control>
+                                    {formik.touched.type && formik.errors.type && <Alert variant="danger">{formik.errors.type}</Alert>}
+                                </Form.Group>
+                                <Form.Group>
+                                    <Form.Label>Amount:</Form.Label>
+                                    <Form.Control type="tel" name="amount" value={formik.values.amount} onChange={formik.handleChange} onBlur={formik.handleBlur} required />
+                                    {formik.touched.amount && formik.errors.amount && <Alert variant="danger">{formik.errors.amount}</Alert>}
+                                </Form.Group>
+                                <Form.Group>
+                                    <Form.Label>Category:</Form.Label>
+                                    <Form.Control as="select" name="category" value={formik.values.category} onChange={(e) => {
                                         formik.handleChange(e);
                                         setShowNewCategoryInput(e.target.value === 'new');
                                     }} onBlur={formik.handleBlur} required>
@@ -268,15 +349,15 @@ function Transaction() {
                                             <option key={category} value={category}>{category}</option>
                                         ))}
                                         <option value="new">Add new category</option>
-                                    </select>
+                                    </Form.Control>
                                     {showNewCategoryInput && (
-                                        <input type="text" className="form-control mt-2" placeholder="Enter new category" value={newCategory} onChange={(e) => setNewCategory(e.target.value)} required />
+                                        <Form.Control type="text" className="mt-2" placeholder="Enter new category" value={newCategory} onChange={(e) => setNewCategory(e.target.value)} required />
                                     )}
-                                    {formik.touched.category && formik.errors.category ? <div className="error-message">{formik.errors.category}</div> : null}
-                                </div>
-                                <div className="form-group">
-                                    <label>Sub-Category:</label>
-                                    <select className="form-control" name="subCategory" value={formik.values.subCategory} onChange={(e) => {
+                                    {formik.touched.category && formik.errors.category && <Alert variant="danger">{formik.errors.category}</Alert>}
+                                </Form.Group>
+                                <Form.Group>
+                                    <Form.Label>Sub-Category:</Form.Label>
+                                    <Form.Control as="select" name="subCategory" value={formik.values.subCategory} onChange={(e) => {
                                         formik.handleChange(e);
                                         setShowNewSubCategoryInput(e.target.value === 'new');
                                     }} onBlur={formik.handleBlur} required>
@@ -285,54 +366,54 @@ function Transaction() {
                                             <option key={subCategory} value={subCategory}>{subCategory}</option>
                                         ))}
                                         <option value="new">Add new sub-category</option>
-                                    </select>
+                                    </Form.Control>
                                     {showNewSubCategoryInput && (
-                                        <input type="text" className="form-control mt-2" placeholder="Enter new sub-category" value={newSubCategory} onChange={(e) => setNewSubCategory(e.target.value)} required />
+                                        <Form.Control type="text" className="mt-2" placeholder="Enter new sub-category" value={newSubCategory} onChange={(e) => setNewSubCategory(e.target.value)} required />
                                     )}
-                                    {formik.touched.subCategory && formik.errors.subCategory ? <div className="error-message">{formik.errors.subCategory}</div> : null}
-                                </div>
-                                <div className="form-group">
-                                    <label>Description:</label>
-                                    <textarea className="form-control" name="description" value={formik.values.description} onChange={formik.handleChange} onBlur={formik.handleBlur} />
-                                    {formik.touched.description && formik.errors.description ? <div className="error-message">{formik.errors.description}</div> : null}
-                                </div>
-                                <div className="form-group">
-                                    <label>Upload Files:</label>
-                                    <input type="file" className="form-control-file" name="files" multiple onChange={(event) => formik.setFieldValue('files', Array.from(event.target.files))} />
-                                    {formik.touched.files && formik.errors.files ? <div className="error-message">{formik.errors.files}</div> : null}
-                                </div>
-                                <button type="submit" className="btn btn-primary">Save</button>
-                                <button type="button" className="btn btn-secondary btn-size mt-1" onClick={handleCancelUpdate}>Cancel</button>
-                            </form>
+                                    {formik.touched.subCategory && formik.errors.subCategory && <Alert variant="danger">{formik.errors.subCategory}</Alert>}
+                                </Form.Group>
+                                <Form.Group>
+                                    <Form.Label>Description:</Form.Label>
+                                    <Form.Control as="textarea" name="description" value={formik.values.description} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                                    {formik.touched.description && formik.errors.description && <Alert variant="danger">{formik.errors.description}</Alert>}
+                                </Form.Group>
+                                <Form.Group>
+                                    <Form.Label>Upload Files:</Form.Label>
+                                    <Form.Control type="file" name="files" multiple onChange={(event) => formik.setFieldValue('files', Array.from(event.target.files))} />
+                                    {formik.touched.files && formik.errors.files && <Alert variant="danger">{formik.errors.files}</Alert>}
+                                </Form.Group>
+                                <Button type="submit" variant="primary" className='mt-2'>Save</Button>
+                                <Button type="button" variant="secondary" className="mt-1" onClick={handleCancelUpdate}>Cancel</Button>
+                            </Form>
                         </div>
                     ) : (
                         <div className="add-transaction">
                             <div className="transaction-form">
                                 <h2 className='transHeading'>Add Transaction</h2>
-                                {formik.errors.general && <div className="error-message">{formik.errors.general}</div>}
-                                <form onSubmit={formik.handleSubmit}>
-                                    <div className="form-group">
-                                        <label>Date:</label>
-                                        <input type="date" className="form-control" name="date" value={formik.values.date} onChange={formik.handleChange} onBlur={formik.handleBlur} required />
-                                        {formik.touched.date && formik.errors.date ? <div className="error-message">{formik.errors.date}</div> : null}
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Type:</label>
-                                        <select className="form-control" name="type" value={formik.values.type} onChange={formik.handleChange} onBlur={formik.handleBlur} required>
+                                {formik.errors.general && <Alert variant="danger">{formik.errors.general}</Alert>}
+                                <Form onSubmit={formik.handleSubmit}>
+                                    <Form.Group>
+                                        <Form.Label>Date:</Form.Label>
+                                        <Form.Control type="date" name="date" value={formik.values.date} readOnly />
+                                        {formik.touched.date && formik.errors.date && <Alert variant="danger">{formik.errors.date}</Alert>}
+                                    </Form.Group>
+                                    <Form.Group>
+                                        <Form.Label>Type:</Form.Label>
+                                        <Form.Control as="select" name="type" value={formik.values.type} onChange={formik.handleChange} onBlur={formik.handleBlur} required>
                                             <option value="">Select type</option>
                                             <option value="expense">Expense</option>
                                             <option value="income">Income</option>
-                                        </select>
-                                        {formik.touched.type && formik.errors.type ? <div className="error-message">{formik.errors.type}</div> : null}
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Amount:</label>
-                                        <input type="tel" className="form-control" name="amount" value={formik.values.amount} onChange={formik.handleChange} onBlur={formik.handleBlur} required />
-                                        {formik.touched.amount && formik.errors.amount ? <div className="error-message">{formik.errors.amount}</div> : null}
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Category:</label>
-                                        <select className="form-control" name="category" value={formik.values.category} onChange={(e) => {
+                                        </Form.Control>
+                                        {formik.touched.type && formik.errors.type && <Alert variant="danger">{formik.errors.type}</Alert>}
+                                    </Form.Group>
+                                    <Form.Group>
+                                        <Form.Label>Amount:</Form.Label>
+                                        <Form.Control type="tel" name="amount" value={formik.values.amount} onChange={formik.handleChange} onBlur={formik.handleBlur} required />
+                                        {formik.touched.amount && formik.errors.amount && <Alert variant="danger">{formik.errors.amount}</Alert>}
+                                    </Form.Group>
+                                    <Form.Group>
+                                        <Form.Label>Category:</Form.Label>
+                                        <Form.Control as="select" name="category" value={formik.values.category} onChange={(e) => {
                                             formik.handleChange(e);
                                             setShowNewCategoryInput(e.target.value === 'new');
                                         }} onBlur={formik.handleBlur} required>
@@ -341,15 +422,15 @@ function Transaction() {
                                                 <option key={category} value={category}>{category}</option>
                                             ))}
                                             <option value="new">Add new category</option>
-                                        </select>
+                                        </Form.Control>
                                         {showNewCategoryInput && (
-                                            <input type="text" className="form-control mt-2" placeholder="Enter new category" value={newCategory} onChange={(e) => setNewCategory(e.target.value)} required />
+                                            <Form.Control type="text" className="mt-2" placeholder="Enter new category" value={newCategory} onChange={(e) => setNewCategory(e.target.value)} required />
                                         )}
-                                        {formik.touched.category && formik.errors.category ? <div className="error-message">{formik.errors.category}</div> : null}
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Sub-Category:</label>
-                                        <select className="form-control" name="subCategory" value={formik.values.subCategory} onChange={(e) => {
+                                        {formik.touched.category && formik.errors.category && <Alert variant="danger">{formik.errors.category}</Alert>}
+                                    </Form.Group>
+                                    <Form.Group>
+                                        <Form.Label>Sub-Category:</Form.Label>
+                                        <Form.Control as="select" name="subCategory" value={formik.values.subCategory} onChange={(e) => {
                                             formik.handleChange(e);
                                             setShowNewSubCategoryInput(e.target.value === 'new');
                                         }} onBlur={formik.handleBlur} required>
@@ -358,50 +439,83 @@ function Transaction() {
                                                 <option key={subCategory} value={subCategory}>{subCategory}</option>
                                             ))}
                                             <option value="new">Add new sub-category</option>
-                                        </select>
+                                        </Form.Control>
                                         {showNewSubCategoryInput && (
-                                            <input type="text" className="form-control mt-2" placeholder="Enter new sub-category" value={newSubCategory} onChange={(e) => setNewSubCategory(e.target.value)} required />
+                                            <Form.Control type="text" className="mt-2" placeholder="Enter new sub-category" value={newSubCategory} onChange={(e) => setNewSubCategory(e.target.value)} required />
                                         )}
-                                        {formik.touched.subCategory && formik.errors.subCategory ? <div className="error-message">{formik.errors.subCategory}</div> : null}
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Description:</label>
-                                        <textarea className="form-control" name="description" value={formik.values.description} onChange={formik.handleChange} onBlur={formik.handleBlur} />
-                                        {formik.touched.description && formik.errors.description ? <div className="error-message">{formik.errors.description}</div> : null}
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Upload Files:</label>
-                                        <input type="file" className="form-control-file" name="files" multiple onChange={(event) => formik.setFieldValue('files', Array.from(event.target.files))} />
-                                        {formik.touched.files && formik.errors.files ? <div className="error-message">{formik.errors.files}</div> : null}
-                                    </div>
-                                    <button type="submit" className="btn btn-primary">Submit</button>
-                                </form>
+                                        {formik.touched.subCategory && formik.errors.subCategory && <Alert variant="danger">{formik.errors.subCategory}</Alert>}
+                                    </Form.Group>
+                                    <Form.Group>
+                                        <Form.Label>Description:</Form.Label>
+                                        <Form.Control as="textarea" name="description" value={formik.values.description} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                                        {formik.touched.description && formik.errors.description && <Alert variant="danger">{formik.errors.description}</Alert>}
+                                    </Form.Group>
+                                    <Form.Group>
+                                        <Form.Label>Upload Files:</Form.Label>
+                                        <Form.Control type="file" name="files" multiple onChange={(event) => formik.setFieldValue('files', Array.from(event.target.files))} />
+                                        {formik.touched.files && formik.errors.files && <Alert variant="danger">{formik.errors.files}</Alert>}
+                                    </Form.Group>
+                                    <Button type="submit" variant="primary" className='mt-2'>Submit</Button>
+                                </Form>
                             </div>
                         </div>
                     )}
-                </div>
-                <div className="col-md-9 col-sm-12">
+                </Col>
+                <Col md={9} sm={12}>
                     <div className='heading'>
-                        <h2>Recent Transactions</h2>
+                        <h2>{location.charAt(0).toUpperCase() + location.slice(1)} Transactions</h2>
                     </div>
-                    {errorMessage && <div className="error-message">{errorMessage}</div>}
+                    {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
                     <div className="filters">
-                        <label>Start Date:</label>
-                        <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-                        <label>End Date:</label>
-                        <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
-                        <label>Type:</label>
-                        <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
-                            <option value="all">All</option>
-                            <option value="income">Income</option>
-                            <option value="expense">Expense</option>
-                        </select>
-                        <label>Show Last:</label>
-                        <select value={transactionCount} onChange={(e) => setTransactionCount(e.target.value)}>
-                            <option value="10">10 Transactions</option>
-                            <option value="20">20 Transactions</option>
-                            <option value="all">All Transactions</option>
-                        </select>
+                        <Form.Group as={Row}>
+                            <Form.Label column>Start Date:</Form.Label>
+                            <Col>
+                                <Form.Control type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+                            </Col>
+                        </Form.Group>
+                        <Form.Group as={Row}>
+                            <Form.Label column>End Date:</Form.Label>
+                            <Col>
+                                <Form.Control type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+                            </Col>
+                        </Form.Group>
+                        <Form.Group as={Row}>
+                            <Form.Label column>Type:</Form.Label>
+                            <Col>
+                                <Form.Control as="select" value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
+                                    <option value="all">All</option>
+                                    <option value="income">Income</option>
+                                    <option value="expense">Expense</option>
+                                </Form.Control>
+                            </Col>
+                        </Form.Group>
+                        <Form.Group as={Row}>
+                            <Form.Label column>Category:</Form.Label>
+                            <Col>
+                                <Form.Control as="select" value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
+                                    <option value="">All Categories</option>
+                                    {categories.map(category => (
+                                        <option key={category} value={category}>{category}</option>
+                                    ))}
+                                </Form.Control>
+                            </Col>
+                        </Form.Group>
+                        <Form.Group as={Row}>
+                            <Form.Label column>Search:</Form.Label>
+                            <Col>
+                                <Form.Control type="text" value={searchKeyword} onChange={(e) => setSearchKeyword(e.target.value)} placeholder="Search description" />
+                            </Col>
+                        </Form.Group>
+                        <Form.Group as={Row}>
+                            <Form.Label column>Show Last:</Form.Label>
+                            <Col>
+                                <Form.Control as="select" value={transactionCount} onChange={(e) => setTransactionCount(e.target.value)}>
+                                    <option value="10">10 Transactions</option>
+                                    <option value="20">20 Transactions</option>
+                                    <option value="all">All Transactions</option>
+                                </Form.Control>
+                            </Col>
+                        </Form.Group>
                     </div>
                     <div className="totals">
                         {typeFilter === 'all' && <h4>Total Income: ₹{totalIncome}</h4>}
@@ -409,9 +523,9 @@ function Transaction() {
                         {typeFilter === 'all' && <h4>Total Balance: ₹{totalBalance}</h4>}
                         {typeFilter === 'income' && <h4>Total Income: ₹{totalIncome}</h4>}
                         {typeFilter === 'expense' && <h4>Total Expense: ₹{totalExpense}</h4>}
-                        <button className="btn btn-primary" onClick={exportToCSV}>Export to CSV</button>
+                        <Button onClick={exportToCSV}>Export to CSV</Button>
                     </div>
-                    <table className="transaction-table table table-striped table-bordered">
+                    <Table striped bordered hover className="transaction-table">
                         <thead>
                             <tr>
                                 <th>Date</th>
@@ -420,6 +534,7 @@ function Transaction() {
                                 <th>Category</th>
                                 <th>Sub-Category</th>
                                 <th>Description</th>
+                                <th>Files</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -432,13 +547,18 @@ function Transaction() {
                                     <td>{transaction.category}</td>
                                     <td>{transaction.subCategory}</td>
                                     <td>{transaction.description}</td>
-                                    <td><button className="btn btn-primary" onClick={() => handleUpdateClick(transaction)}>Update</button></td>
+                                    <td>
+                                        {transaction.file && (
+                                            <a href={`https://newrainsarees.s3.${AWS_REGION}.amazonaws.com/transactions/${transaction.file}`} className="btn btn-outline-success" download>Download</a>
+                                        )}
+                                    </td>
+                                    <td><Button variant="primary" onClick={() => handleUpdateClick(transaction)}>Update</Button></td>
                                 </tr>
                             ))}
                         </tbody>
-                    </table>
-                </div>
-            </div>
+                    </Table>
+                </Col>
+            </Row>
         </div>
     );
 }

@@ -363,12 +363,7 @@ const Weaver = () => {
                                     </div>
                                     <div className="form-group">
                                         <label htmlFor="loomNumber">Loom Number</label>
-                                        <select className="form-control" id="loomNumber" name="loomNumber" value={formData.loomNumber} onChange={handleInputChange} onKeyDown={handleKeyPress} required>
-                                            <option value="">Select Loom Number</option>
-                                            {loomNumbers.map((number) => (
-                                                <option key={number} value={number}>{number}</option>
-                                            ))}
-                                        </select>
+                                        <input type="number" className="form-control" id="loomNumber" name="loomNumber" placeholder="Enter new loom number" onChange={handleInputChange} onKeyDown={handleKeyPress} required />
                                     </div>
                                     <div className="form-group">
                                         <label htmlFor="loomType">Loom Type</label>

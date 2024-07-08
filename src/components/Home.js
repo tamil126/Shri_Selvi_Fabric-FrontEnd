@@ -19,7 +19,7 @@ function Home() {
             </div>
             <div className="data-container">
                 <div className='text-center saree-design-preview'>
-                    <img src="https://okcredit-blog-images-prod.storage.googleapis.com/2021/02/online-saree.jpg" alt="Featured Saree Design" className="featured-image" />
+                    <img src="https://singhanias.in/cdn/shop/collections/e925ca5d14eb8518956368f4233d57c1.jpg?v=1687192265" alt="Featured Saree Design" className="featured-image" />
                 </div>
             </div>
         </div>
