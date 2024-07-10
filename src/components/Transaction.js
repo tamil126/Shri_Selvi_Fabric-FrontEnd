@@ -30,23 +30,15 @@ function Transaction() {
     const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [searchKeyword, setSearchKeyword] = useState('');
-    const [location, setLocation] = useState('office');
-    const [locations, setLocations] = useState(['office', 'factory', 'store']);
+    const [location, setLocation] = useState('');
+    const [locations, setLocations] = useState([]);
     const [newLocation, setNewLocation] = useState('');
     const [adminErrorMessage, setAdminErrorMessage] = useState('');
     const navigate = useNavigate();
 
-    const fetchLocations = async () => {
-        try {
-            const response = await axios.get(`${BASE_URL}/locations`);
-            setLocations(response.data.locations);
-        } catch (error) {
-            console.error('Error fetching locations:', error);
-            setErrorMessage('Failed to load locations. Please try again later.');
-        }
-    };
-
     const fetchRecentTransactions = useCallback(async () => {
+        if (!location) return;
+        
         try {
             const response = await axios.get(`${BASE_URL}/transactions/${location}`);
             const formattedTransactions = response.data.map(transaction => ({
@@ -57,10 +49,13 @@ function Transaction() {
         } catch (error) {
             console.error('Error fetching recent transactions:', error);
             setErrorMessage('Failed to load recent transactions. Please try again later.');
+            setTimeout(() => setErrorMessage(''), 5000);
         }
     }, [location]);
 
     const fetchCategoriesAndSubCategories = useCallback(async () => {
+        if (!location) return;
+
         try {
             const response = await axios.get(`${BASE_URL}/categories/${location}`);
             setCategories(response.data.categories);
@@ -68,13 +63,33 @@ function Transaction() {
         } catch (error) {
             console.error('Error fetching categories and subcategories:', error);
             setErrorMessage('Failed to load categories and subcategories. Please try again later.');
+            setTimeout(() => setErrorMessage(''), 5000);
         }
     }, [location]);
 
+    const fetchLocations = useCallback(async () => {
+        try {
+            const response = await axios.get(`${BASE_URL}/locations`);
+            setLocations(response.data.locations);
+            if (response.data.locations.length > 0) {
+                setLocation(response.data.locations[0]); // Set the first location as default
+            }
+        } catch (error) {
+            console.error('Error fetching locations:', error);
+            setErrorMessage('Failed to load locations. Please try again later.');
+            setTimeout(() => setErrorMessage(''), 5000);
+        }
+    }, []);
+
     useEffect(() => {
         fetchLocations();
-        fetchRecentTransactions();
-        fetchCategoriesAndSubCategories();
+    }, [fetchLocations]);
+
+    useEffect(() => {
+        if (location) {
+            fetchRecentTransactions();
+            fetchCategoriesAndSubCategories();
+        }
     }, [location, fetchRecentTransactions, fetchCategoriesAndSubCategories]);
 
     const formatDateForDisplay = (dateString) => {
@@ -137,6 +152,7 @@ function Transaction() {
             } catch (error) {
                 console.error('Error submitting transaction:', error);
                 setErrorMessage('Failed to submit transaction. Please try again later.');
+                setTimeout(() => setErrorMessage(''), 5000);
             }
         }
     });
@@ -190,9 +206,9 @@ function Transaction() {
     const handleCancelUpdate = () => {
         setSelectedTransaction(null);
         formik.resetForm();
-        setShowPasswordPrompt(false);
         setShowNewCategoryInput(false);
         setShowNewSubCategoryInput(false);
+        setShowPasswordPrompt(false);
     };
 
     const handleUpdateSubmit = async (event) => {
@@ -226,13 +242,16 @@ function Transaction() {
         } catch (error) {
             console.error('Error updating transaction:', error);
             setErrorMessage('Failed to update transaction. Please try again later.');
+            setTimeout(() => setErrorMessage(''), 5000);
         }
     };
 
     const handleLocationChange = async (newLocation) => {
+        if (!newLocation) return;
+        
         await checkAndCreateTable(newLocation); // Check and create table if it doesn't exist
         setLocation(newLocation);
-        fetchRecentTransactions(); // Fetch transactions without delay
+        fetchRecentTransactions();  // Fetch transactions immediately after setting location
     };
 
     const checkAndCreateTable = async (tableName) => {
@@ -241,10 +260,13 @@ function Transaction() {
         } catch (error) {
             console.error('Error creating new table:', error);
             setErrorMessage('Failed to create new table. Please try again later.');
+            setTimeout(() => setErrorMessage(''), 5000);
         }
     };
 
     const handleAddLocation = async () => {
+        if (!newLocation) return;
+        
         await handleLocationChange(newLocation);
         setLocations([...locations, newLocation]);
         setNewLocation('');
@@ -278,14 +300,7 @@ function Transaction() {
 
     return (
         <div className="transaction-page">
-            {showPasswordPrompt && (
-                <AdminPasswordPrompt
-                    onConfirm={handlePasswordConfirm}
-                    onCancel={handleCancelUpdate}
-                    errorMessage={adminErrorMessage}
-                    username="nrs"
-                />
-            )}
+            {showPasswordPrompt && <AdminPasswordPrompt onConfirm={handlePasswordConfirm} onCancel={handleCancelUpdate} errorMessage={adminErrorMessage} username="nrs" />}
             <Row>
                 <Col>
                     <div className="companyName">
@@ -302,15 +317,13 @@ function Transaction() {
             <Row>
                 <Col md={3} sm={12} className="topSpace">
                     <div className="location-buttons">
-                        {locations.map(loc => (
-                            <Button key={loc} variant={location === loc ? 'primary' : 'info'} className="mx-2 my-2" onClick={() => handleLocationChange(loc)}>
-                                {loc.charAt(0).toUpperCase() + loc.slice(1)}
-                            </Button>
-                        ))}
+                    {locations.map(loc => (
+                        <Button key={loc} variant={location === loc ? 'primary' : 'info'} className="mx-2 my-2" onClick={() => handleLocationChange(loc)}>{loc.charAt(0).toUpperCase() + loc.slice(1)}</Button>
+                    ))}
                         <Button variant="success" onClick={() => setShowNewLocationInput(true)}>Add Location</Button>
                         {showNewLocationInput && (
                             <div>
-                                <Form.Control type="text" className="mt-2" placeholder="Enter new location" value={newLocation} onChange={(e) => setNewLocation(e.target.value)} />
+                                <Form.Control type="text" placeholder="Enter new location" className="mt-2" value={newLocation} onChange={(e) => setNewLocation(e.target.value)} />
                                 <Button variant="success" className="mt-2 mx-2" onClick={handleAddLocation}>Create Location</Button>
                             </div>
                         )}
@@ -525,7 +538,7 @@ function Transaction() {
                         {typeFilter === 'expense' && <h4>Total Expense: ₹{totalExpense}</h4>}
                         <Button onClick={exportToCSV}>Export to CSV</Button>
                     </div>
-                    <Table striped bordered hover className="transaction-table">
+                    <Table striped bordered hover>
                         <thead>
                             <tr>
                                 <th>Date</th>
@@ -542,7 +555,7 @@ function Transaction() {
                             {filteredTransactions.sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, transactionCount === 'all' ? filteredTransactions.length : transactionCount).map(transaction => (
                                 <tr key={transaction.id}>
                                     <td>{formatDateForDisplay(transaction.date)}</td>
-                                    <td>{transaction.type}</td>
+                                    <td className={transaction.type === 'income' ? 'income-type' : 'expense-type'}>{transaction.type}</td>
                                     <td>₹ {transaction.amount}</td>
                                     <td>{transaction.category}</td>
                                     <td>{transaction.subCategory}</td>
